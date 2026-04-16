@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shadow Roll</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <h1>🎲 Shadow Roll</h1>
+      <button id="logoutBtn" class="hidden">Logout</button>
+    </header>
+
+    <section id="authSection" class="card">
+      <h2>Login / Registrierung</h2>
+
+      <div class="tabs">
+        <button id="showLoginBtn" class="tab active">Login</button>
+        <button id="showRegisterBtn" class="tab">Registrieren</button>
+      </div>
+
+      <div id="loginBox">
+        <input id="loginEmail" type="email" placeholder="E-Mail" />
+        <input id="loginPassword" type="password" placeholder="Passwort" />
+        <button id="loginBtn">Einloggen</button>
+      </div>
+
+      <div id="registerBox" class="hidden">
+        <input id="registerUsername" type="text" placeholder="Username" />
+        <input id="registerEmail" type="email" placeholder="E-Mail" />
+        <input id="registerPassword" type="password" placeholder="Passwort" />
+        <button id="registerBtn">Registrieren</button>
+      </div>
+
+      <p id="authMessage" class="message"></p>
+    </section>
+
+    <section id="appSection" class="hidden">
+      <div class="card">
+        <h2>Spielerprofil</h2>
+        <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
+        <p><strong>Coins:</strong> <span id="coinsValue">-</span></p>
+        <p><strong>Record:</strong> <span id="recordValue">-</span></p>
+        <p><strong>Games:</strong> <span id="gamesValue">-</span></p>
+        <p><strong>Wins:</strong> <span id="winsValue">-</span></p>
+        <p><strong>Losses:</strong> <span id="lossesValue">-</span></p>
+        <p><strong>Streak:</strong> <span id="streakValue">-</span></p>
+        <p><strong>Best Streak:</strong> <span id="bestStreakValue">-</span></p>
+        <p><strong>Admin:</strong> <span id="adminValue">-</span></p>
+
+        <button id="refreshBtn">Profil neu laden</button>
+      </div>
+
+      <section id="adminSection" class="card hidden">
+        <h2>Admin Gift Panel</h2>
+        <input id="giftUsername" type="text" placeholder="Ziel-Username" />
+        <input id="giftAmount" type="number" placeholder="Coins" min="1" />
+        <input id="giftMessage" type="text" placeholder="Nachricht (optional)" />
+        <button id="giftBtn">Coins verschenken</button>
+        <p id="giftMessageBox" class="message"></p>
+      </section>
+    </section>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
