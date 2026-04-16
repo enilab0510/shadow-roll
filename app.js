@@ -1,9 +1,8 @@
 const SUPABASE_URL = "https://livqhwbvdxafhrbltnxn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// UI
 const authSection = document.getElementById("authSection");
 const appSection = document.getElementById("appSection");
 const adminSection = document.getElementById("adminSection");
@@ -34,29 +33,33 @@ const giftUsername = document.getElementById("giftUsername");
 const giftAmount = document.getElementById("giftAmount");
 const giftMessage = document.getElementById("giftMessage");
 
-function showLoginMode() {
+function setLoginMode() {
   loginBox.classList.remove("hidden");
   registerBox.classList.add("hidden");
   showLoginBtn.classList.add("active");
   showRegisterBtn.classList.remove("active");
 }
 
-function showRegisterMode() {
+function setRegisterMode() {
   loginBox.classList.add("hidden");
   registerBox.classList.remove("hidden");
   showLoginBtn.classList.remove("active");
   showRegisterBtn.classList.add("active");
 }
 
-showLoginBtn.onclick = showLoginMode;
-showRegisterBtn.onclick = showRegisterMode;
+showLoginBtn.addEventListener("click", setLoginMode);
+showRegisterBtn.addEventListener("click", setRegisterMode);
 
-// LOGIN
-loginBtn.onclick = async () => {
+loginBtn.addEventListener("click", async () => {
   const email = loginEmail.value.trim();
   const password = loginPassword.value;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  if (!email || !password) {
+    alert("Bitte E-Mail und Passwort eingeben.");
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
     email,
     password,
   });
@@ -67,20 +70,19 @@ loginBtn.onclick = async () => {
   }
 
   await loadProfile();
-};
+});
 
-// REGISTER
-registerBtn.onclick = async () => {
+registerBtn.addEventListener("click", async () => {
   const username = registerUsername.value.trim();
   const email = registerEmail.value.trim();
   const password = registerPassword.value;
 
   if (!username || !email || !password) {
-    alert("Bitte alles ausfüllen.");
+    alert("Bitte Username, E-Mail und Passwort eingeben.");
     return;
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error } = await supabaseClient.auth.signUp({
     email,
     password,
     options: {
@@ -93,32 +95,30 @@ registerBtn.onclick = async () => {
     return;
   }
 
-  alert("Registrierung erfolgreich. Du kannst dich jetzt einloggen.");
-  showLoginMode();
-};
+  alert("Registrierung erfolgreich. Jetzt einloggen.");
+  setLoginMode();
+});
 
-// LOGOUT
-logoutBtn.onclick = async () => {
-  await supabase.auth.signOut();
+logoutBtn.addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
   authSection.classList.remove("hidden");
   appSection.classList.add("hidden");
   adminSection.classList.add("hidden");
   logoutBtn.classList.add("hidden");
-};
+});
 
-// PROFIL LADEN
 async function loadProfile() {
   const {
     data: { user },
     error: userError,
-  } = await supabase.auth.getUser();
+  } = await supabaseClient.auth.getUser();
 
   if (userError || !user) {
     alert("User konnte nicht geladen werden.");
     return;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("profiles")
     .select("*")
     .eq("id", user.id)
@@ -144,8 +144,7 @@ async function loadProfile() {
   }
 }
 
-// ADMIN GIFT
-giftBtn.onclick = async () => {
+giftBtn.addEventListener("click", async () => {
   const username = giftUsername.value.trim();
   const amount = parseInt(giftAmount.value, 10);
   const message = giftMessage.value.trim();
@@ -155,7 +154,7 @@ giftBtn.onclick = async () => {
     return;
   }
 
-  const { error } = await supabase.rpc("admin_gift_coins", {
+  const { error } = await supabaseClient.rpc("admin_gift_coins", {
     target_username: username,
     gift_amount: amount,
     gift_message: message,
@@ -167,17 +166,16 @@ giftBtn.onclick = async () => {
   }
 
   alert("Coins gesendet!");
-};
+});
 
-// AUTO LOGIN
 (async () => {
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await supabaseClient.auth.getSession();
 
   if (session) {
     await loadProfile();
   } else {
-    showLoginMode();
+    setLoginMode();
   }
 })();
