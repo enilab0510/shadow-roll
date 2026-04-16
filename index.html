@@ -3,19 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Roll</title>
+  <title>Shadow Roll Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
   <div class="container">
     <header class="topbar">
-      <h1>🎲 Shadow Roll</h1>
-      <button id="logoutBtn" class="hidden">Logout</button>
+      <div>
+        <h1>🎲 Shadow Roll Deluxe</h1>
+        <p class="subtitle">Risk. Shadow. Timing.</p>
+      </div>
+      <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
     </header>
 
-    <!-- LOGIN / REGISTER -->
-    <section id="authSection" class="card">
+    <!-- AUTH -->
+    <section id="authSection" class="card auth-card">
       <h2>Login / Registrierung</h2>
 
       <div class="tabs">
@@ -26,39 +31,149 @@
       <div id="loginBox">
         <input id="loginEmail" type="email" placeholder="E-Mail" />
         <input id="loginPassword" type="password" placeholder="Passwort" />
-        <button id="loginBtn">Einloggen</button>
+        <button id="loginBtn" class="btn btn-primary">Einloggen</button>
       </div>
 
       <div id="registerBox" class="hidden">
         <input id="registerUsername" type="text" placeholder="Username" />
         <input id="registerEmail" type="email" placeholder="E-Mail" />
         <input id="registerPassword" type="password" placeholder="Passwort" />
-        <button id="registerBtn">Registrieren</button>
+        <button id="registerBtn" class="btn btn-primary">Registrieren</button>
       </div>
     </section>
 
     <!-- APP -->
-    <section id="appSection" class="card hidden">
-      <h2>Profil</h2>
-      <p>Username: <span id="usernameValue"></span></p>
-      <p>Coins: <span id="coinsValue"></span></p>
-      <p>Admin: <span id="adminValue"></span></p>
-    </section>
+    <section id="appSection" class="hidden">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Coins</span>
+          <span class="stat-value" id="coinsValue">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Record</span>
+          <span class="stat-value" id="recordValue">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Games</span>
+          <span class="stat-value" id="gamesValue">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Winrate</span>
+          <span class="stat-value" id="winrateValue">0%</span>
+        </div>
+      </div>
 
-    <!-- ADMIN -->
-    <section id="adminSection" class="card hidden">
-      <h2>Admin Panel</h2>
+      <div class="layout-grid">
+        <section class="card">
+          <h2>Profil</h2>
+          <div class="profile-lines">
+            <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
+            <p><strong>Admin:</strong> <span id="adminValue">Nein</span></p>
+            <p><strong>Wins:</strong> <span id="winsValue">0</span></p>
+            <p><strong>Losses:</strong> <span id="lossesValue">0</span></p>
+            <p><strong>Streak:</strong> <span id="streakValue">0</span></p>
+            <p><strong>Best Streak:</strong> <span id="bestStreakValue">0</span></p>
+          </div>
+        </section>
 
-      <input id="giftUsername" placeholder="Username" />
-      <input id="giftAmount" type="number" placeholder="Coins" />
-      <input id="giftMessage" placeholder="Nachricht" />
+        <section class="card game-card">
+          <div class="game-head">
+            <div>
+              <h2>Shadow Roll</h2>
+              <p id="modeDesc" class="muted">Wähle Mode und starte eine Runde.</p>
+            </div>
+            <div class="mode-buttons">
+              <button class="mode-btn active" data-mode="Easy">Easy</button>
+              <button class="mode-btn" data-mode="Normal">Normal</button>
+              <button class="mode-btn" data-mode="Hardcore">Hardcore</button>
+            </div>
+          </div>
 
-      <button id="giftBtn">Coins senden</button>
+          <div class="game-setup">
+            <div>
+              <label>Bet</label>
+              <input id="betInput" type="number" min="1" value="100" />
+            </div>
+            <div>
+              <label>Event</label>
+              <div id="eventBadge" class="event-badge">-</div>
+            </div>
+            <div>
+              <label>Hint Cost</label>
+              <div id="hintCostBox" class="mini-box">-</div>
+            </div>
+            <div>
+              <label>DROP Now</label>
+              <div id="dropPayoutBox" class="mini-box">-</div>
+            </div>
+          </div>
+
+          <div class="round-board">
+            <div class="board-card">
+              <span class="board-label">Your Value</span>
+              <div id="playerValue" class="big-number">-</div>
+              <div id="streakBadge" class="pill">No active streak</div>
+            </div>
+
+            <div class="board-card">
+              <span class="board-label">Current Pot</span>
+              <div id="potValue" class="big-number smaller">-</div>
+              <div class="round-meta">
+                <span id="multiplierText">Multiplier: -</span>
+                <span id="riskText">Risks: 0/5</span>
+              </div>
+              <div class="risk-bar">
+                <div id="riskFill" class="risk-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hint-box">
+            <strong>Hint:</strong>
+            <span id="hintText">-</span>
+          </div>
+
+          <div id="statusBox" class="status-box info">
+            Press "New Round" to start.
+          </div>
+
+          <div class="action-row">
+            <button id="startBtn" class="btn btn-gold">New Round</button>
+            <button id="safeBtn" class="btn btn-green" disabled>SAFE</button>
+            <button id="riskBtn" class="btn btn-red" disabled>RISK</button>
+            <button id="hintBtn" class="btn btn-blue" disabled>HINT</button>
+            <button id="dropBtn" class="btn btn-purple" disabled>DROP</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="layout-grid second-row">
+        <section class="card">
+          <h2>Last Round</h2>
+          <pre id="summaryBox" class="summary-box">No round played yet.</pre>
+        </section>
+
+        <section id="adminSection" class="card hidden">
+          <h2>Admin Panel</h2>
+          <input id="giftUsername" type="text" placeholder="Ziel-Username" />
+          <input id="giftAmount" type="number" placeholder="Coins" min="1" />
+          <input id="giftMessage" type="text" placeholder="Nachricht (optional)" />
+          <button id="giftBtn" class="btn btn-primary">Coins senden</button>
+        </section>
+      </div>
     </section>
   </div>
 
-  <!-- 🔥 WICHTIG: SUPABASE + SCRIPT -->
+  <div id="revealOverlay" class="reveal-overlay hidden">
+    <div class="reveal-card">
+      <div class="reveal-title">Revealing Shadow...</div>
+      <div id="revealCountdown" class="reveal-countdown">3</div>
+      <div id="shadowNumber" class="shadow-number hidden">-</div>
+      <div id="shadowFlavor" class="shadow-flavor hidden"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>
