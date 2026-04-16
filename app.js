@@ -1,6 +1,6 @@
 // 🔥 SUPABASE (HIER EINTRAGEN)
 const SUPABASE_URL = "https://livqhwbvdxafhrbltnxn.supabase.co";
-const SUPABASE_KEY = "HIER_DEIN_ANON_KEY";
+const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
