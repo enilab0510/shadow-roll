@@ -136,7 +136,7 @@ const shadowFlavor = $("shadowFlavor");
 
 let currentUser = null;
 let profile = null;
-let currentMode = "Normal";
+let currentMode = "Easy";
 
 let round = {
   active: false,
@@ -362,6 +362,45 @@ function refreshUI() {
   dropBtn.disabled = !controlsEnabled;
 }
 
+async function ensureProfile(user) {
+  let { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+    const username =
+      user.user_metadata?.username ||
+      user.email?.split("@")[0] ||
+      "Player";
+
+    const insertResult = await supabase
+      .from("profiles")
+      .insert({
+        id: user.id,
+        username,
+        coins: STARTING_COINS,
+        record: STARTING_COINS,
+        games: 0,
+        wins: 0,
+        losses: 0,
+        streak: 0,
+        best_streak: 0,
+        is_admin: false,
+      })
+      .select()
+      .single();
+
+    if (insertResult.error) throw insertResult.error;
+    data = insertResult.data;
+  }
+
+  return data;
+}
+
 async function updateProfile(patch) {
   const { data, error } = await supabase
     .from("profiles")
@@ -381,24 +420,11 @@ async function loadProfile() {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    alert("User konnte nicht geladen werden.");
-    return;
+    throw new Error(userError?.message || "User konnte nicht geladen werden.");
   }
 
   currentUser = user;
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (error) {
-    alert("Profil Fehler: " + error.message);
-    return;
-  }
-
-  profile = data;
+  profile = await ensureProfile(user);
 
   authSection.classList.add("hidden");
   appSection.classList.remove("hidden");
@@ -492,7 +518,9 @@ loginBtn.addEventListener("click", async () => {
     });
 
     if (error) throw error;
+
     await loadProfile();
+    setStatus("Login erfolgreich.", "success");
   } catch (err) {
     alert("Login Fehler: " + err.message);
   }
@@ -509,7 +537,7 @@ registerBtn.addEventListener("click", async () => {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -519,8 +547,14 @@ registerBtn.addEventListener("click", async () => {
 
     if (error) throw error;
 
-    alert("Registrierung erfolgreich. Jetzt einloggen.");
-    setLoginMode();
+    if (data.user && !data.session) {
+      alert("Registrierung erfolgreich. Bitte bestätige jetzt zuerst deine E-Mail.");
+      setLoginMode();
+      return;
+    }
+
+    await loadProfile();
+    alert("Registrierung erfolgreich und eingeloggt.");
   } catch (err) {
     alert("Registrierung Fehler: " + err.message);
   }
@@ -791,13 +825,19 @@ giftBtn.addEventListener("click", async () => {
 });
 
 (async () => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  if (session) {
-    await loadProfile();
-  } else {
+    if (session) {
+      await loadProfile();
+    } else {
+      setLoginMode();
+    }
+  } catch (err) {
+    console.error(err);
     setLoginMode();
+    alert("Initialisierungsfehler: " + err.message);
   }
 })();
