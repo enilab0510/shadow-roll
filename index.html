@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
 
   <div class="container">
     <header class="topbar">
@@ -58,15 +59,15 @@
           <span class="stat-value" id="gamesValue">0</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Winrate</span>
+          <span class="stat-label">Win Rate</span>
           <span class="stat-value" id="winrateValue">0%</span>
         </div>
       </div>
 
-      <div class="layout-grid">
-        <section class="card">
+      <div class="main-grid">
+        <section class="card profile-card">
           <h2>Profil</h2>
-          <div class="profile-lines">
+          <div class="profile-list">
             <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
             <p><strong>Admin:</strong> <span id="adminValue">Nein</span></p>
             <p><strong>Wins:</strong> <span id="winsValue">0</span></p>
@@ -80,55 +81,59 @@
           <div class="game-head">
             <div>
               <h2>Shadow Roll</h2>
-              <p id="modeDesc" class="muted">Wähle Mode und starte eine Runde.</p>
+              <p id="modeDesc" class="muted">Balanced standard mode.</p>
             </div>
-            <div class="mode-buttons">
+
+            <div class="mode-switch">
               <button class="mode-btn active" data-mode="Easy">Easy</button>
               <button class="mode-btn" data-mode="Normal">Normal</button>
               <button class="mode-btn" data-mode="Hardcore">Hardcore</button>
             </div>
           </div>
 
-          <div class="game-setup">
-            <div>
-              <label>Bet</label>
+          <div class="setup-grid">
+            <div class="setup-box">
+              <label for="betInput">Bet</label>
               <input id="betInput" type="number" min="1" value="100" />
             </div>
-            <div>
+
+            <div class="setup-box">
               <label>Event</label>
-              <div id="eventBadge" class="event-badge">-</div>
+              <div id="eventBadge" class="mini-display">-</div>
             </div>
-            <div>
+
+            <div class="setup-box">
               <label>Hint Cost</label>
-              <div id="hintCostBox" class="mini-box">-</div>
+              <div id="hintCostBox" class="mini-display">-</div>
             </div>
-            <div>
+
+            <div class="setup-box">
               <label>DROP Now</label>
-              <div id="dropPayoutBox" class="mini-box">-</div>
+              <div id="dropPayoutBox" class="mini-display">-</div>
             </div>
           </div>
 
-          <div class="round-board">
-            <div class="board-card">
-              <span class="board-label">Your Value</span>
-              <div id="playerValue" class="big-number">-</div>
+          <div class="round-grid">
+            <div class="round-box">
+              <span class="round-label">Your Value</span>
+              <div id="playerValue" class="big-value">-</div>
               <div id="streakBadge" class="pill">No active streak</div>
             </div>
 
-            <div class="board-card">
-              <span class="board-label">Current Pot</span>
-              <div id="potValue" class="big-number smaller">-</div>
-              <div class="round-meta">
+            <div class="round-box">
+              <span class="round-label">Round Info</span>
+              <div id="potValue" class="big-value small">-</div>
+              <div class="meta-row">
                 <span id="multiplierText">Multiplier: -</span>
                 <span id="riskText">Risks: 0/5</span>
               </div>
-              <div class="risk-bar">
+              <div class="risk-track">
                 <div id="riskFill" class="risk-fill"></div>
               </div>
             </div>
           </div>
 
-          <div class="hint-box">
+          <div class="hint-card">
             <strong>Hint:</strong>
             <span id="hintText">-</span>
           </div>
@@ -137,7 +142,7 @@
             Press "New Round" to start.
           </div>
 
-          <div class="action-row">
+          <div class="actions">
             <button id="startBtn" class="btn btn-gold">New Round</button>
             <button id="safeBtn" class="btn btn-green" disabled>SAFE</button>
             <button id="riskBtn" class="btn btn-red" disabled>RISK</button>
@@ -147,7 +152,7 @@
         </section>
       </div>
 
-      <div class="layout-grid second-row">
+      <div class="bottom-grid">
         <section class="card">
           <h2>Last Round</h2>
           <pre id="summaryBox" class="summary-box">No round played yet.</pre>
@@ -156,7 +161,7 @@
         <section id="adminSection" class="card hidden">
           <h2>Admin Panel</h2>
           <input id="giftUsername" type="text" placeholder="Ziel-Username" />
-          <input id="giftAmount" type="number" placeholder="Coins" min="1" />
+          <input id="giftAmount" type="number" min="1" placeholder="Coins" />
           <input id="giftMessage" type="text" placeholder="Nachricht (optional)" />
           <button id="giftBtn" class="btn btn-primary">Coins senden</button>
         </section>
@@ -174,7 +179,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=20"></script>
 </body>
 </html>
-<script src="app.js?v=10"></script>
