@@ -13,21 +13,21 @@
       <p class="muted">Nur Registrierung / Login / Logout zum Testen.</p>
 
       <div class="tabs">
-        <button id="showLoginBtn" class="tab active">Login</button>
-        <button id="showRegisterBtn" class="tab">Registrieren</button>
+        <button id="showLoginBtn" class="tab active" type="button">Login</button>
+        <button id="showRegisterBtn" class="tab" type="button">Registrieren</button>
       </div>
 
       <div id="loginBox">
         <input id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email" />
         <input id="loginPassword" type="password" placeholder="Passwort" autocomplete="current-password" />
-        <button id="loginBtn" class="btn btn-primary">Einloggen</button>
+        <button id="loginBtn" class="btn btn-primary" type="button">Einloggen</button>
       </div>
 
       <div id="registerBox" class="hidden">
         <input id="registerUsername" type="text" placeholder="Username" autocomplete="username" />
         <input id="registerEmail" type="email" placeholder="E-Mail" autocomplete="email" />
         <input id="registerPassword" type="password" placeholder="Passwort" autocomplete="new-password" />
-        <button id="registerBtn" class="btn btn-primary">Registrieren</button>
+        <button id="registerBtn" class="btn btn-primary" type="button">Registrieren</button>
       </div>
 
       <div id="messageBox" class="message info">Bereit.</div>
@@ -40,11 +40,11 @@
       <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
       <p><strong>Coins:</strong> <span id="coinsValue">-</span></p>
 
-      <button id="logoutBtn" class="btn btn-danger">Logout</button>
+      <button id="logoutBtn" class="btn btn-danger" type="button">Logout</button>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=40"></script>
+  <script src="app.js?v=41"></script>
 </body>
 </html>
