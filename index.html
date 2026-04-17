@@ -3,34 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Roll Deluxe</title>
+  <title>Shadow Roll</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="startOverlay" class="start-overlay">
-    <div class="start-card">
-      <h1>🎲 Shadow Roll Deluxe</h1>
-      <p>A game of risk, instinct, and timing.</p>
-      <p class="muted center">Push your luck, outplay the Shadow, or escape before it’s too late.</p>
-      <button id="playBtn" class="btn btn-gold" type="button">▶ PLAY</button>
-      <p class="muted center small">Enter = New Round · S = SAFE · R = RISK · H = HINT · D = DROP · 1/2/3 = Modes</p>
-    </div>
-  </div>
-
-  <div id="revealOverlay" class="reveal-overlay hidden">
-    <div class="reveal-card">
-      <div id="revealTitle" class="reveal-title">Revealing Shadow...</div>
-      <div id="revealCountdown" class="reveal-countdown">3</div>
-      <div id="shadowRevealNumber" class="shadow-number hidden">-</div>
-      <div id="shadowRevealFlavor" class="shadow-flavor hidden">-</div>
-    </div>
-  </div>
-
   <main class="page">
     <header class="topbar">
       <div>
-        <h1>🎲 Shadow Roll Deluxe</h1>
-        <p id="headerSub" class="muted">Python-style web build with Supabase</p>
+        <h1>🎲 Shadow Roll</h1>
+        <p class="muted">Risk. Safe. Shadow.</p>
       </div>
       <button id="logoutBtn" class="btn btn-danger hidden" type="button">Logout</button>
     </header>
@@ -61,110 +42,89 @@
 
     <section id="appCard" class="hidden">
       <div class="stats-grid">
-        <div class="card stat-card"><span class="label">Coins</span><span id="coinsValue" class="value">0</span></div>
-        <div class="card stat-card"><span class="label">Record</span><span id="recordValue" class="value">0</span></div>
-        <div class="card stat-card"><span class="label">Games</span><span id="gamesValue" class="value">0</span></div>
-        <div class="card stat-card"><span class="label">Win Rate</span><span id="winrateValue" class="value">0%</span></div>
+        <div class="card stat-card">
+          <span class="label">Username</span>
+          <span id="usernameValue" class="value">-</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Coins</span>
+          <span id="coinsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Games</span>
+          <span id="gamesValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Winrate</span>
+          <span id="winrateValue" class="value">0%</span>
+        </div>
       </div>
 
-      <div class="content-grid">
-        <div class="left-col">
-          <section class="card">
-            <h2>Round Setup</h2>
-            <div class="setup-grid">
-              <div>
-                <label>Mode</label>
-                <div class="mode-row">
-                  <button class="mode-btn" data-mode="Easy" type="button">Easy</button>
-                  <button class="mode-btn active" data-mode="Normal" type="button">Normal</button>
-                  <button class="mode-btn" data-mode="Hardcore" type="button">Hardcore</button>
-                </div>
-              </div>
-              <div>
-                <label for="betInput">Bet</label>
-                <input id="betInput" type="number" min="1" value="100" />
-              </div>
-              <div>
-                <label>Event</label>
-                <div id="eventLabel" class="display-box">-</div>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <h2>Current Round</h2>
-
-            <div class="round-grid">
-              <div class="panel">
-                <span class="panel-label">Your Value</span>
-                <div id="playerValue" class="big-number">-</div>
-                <div id="streakBadge" class="badge">No active streak</div>
-                <div id="hintLabel" class="hint-box">Hint: -</div>
-              </div>
-
-              <div class="panel">
-                <span class="panel-label">Round Info</span>
-                <div id="potLabel" class="info-line">Pot: -</div>
-                <div id="multiplierLabel" class="info-line">Multiplier: -</div>
-                <div id="riskLabel" class="info-line">Risks: 0/5</div>
-                <div id="hintCostLabel" class="info-line gold-text">Hint Cost: -</div>
-
-                <div class="risk-track">
-                  <div id="riskFill" class="risk-fill"></div>
-                </div>
-
-                <div id="safePayoutLabel" class="payout-line green-text">SAFE Payout: -</div>
-                <div id="dropPayoutLabel" class="payout-line blue-text">DROP Now: -</div>
-              </div>
+      <div class="main-grid">
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2>Spiel</h2>
+              <p id="modeDesc" class="muted small">Balanced standard mode.</p>
             </div>
 
-            <div id="modeDescLabel" class="muted">Mode Info: -</div>
-            <div id="animLabel" class="blue-text small-line"></div>
-            <div id="gameMessage" class="message info">Press "New Round" to start.</div>
-
-            <div class="button-row">
-              <button id="startBtn" class="btn btn-gold" type="button">New Round</button>
-              <button id="safeBtn" class="btn btn-green" type="button" disabled>SAFE</button>
-              <button id="riskBtn" class="btn btn-red" type="button" disabled>RISK</button>
-              <button id="hintBtn" class="btn btn-yellow" type="button" disabled>HINT</button>
-              <button id="dropBtn" class="btn btn-blue" type="button" disabled>DROP</button>
+            <div class="mode-row">
+              <button class="mode-btn" data-mode="Easy" type="button">Easy</button>
+              <button class="mode-btn active" data-mode="Normal" type="button">Normal</button>
+              <button class="mode-btn" data-mode="Hardcore" type="button">Hardcore</button>
             </div>
-          </section>
+          </div>
 
-          <section class="card">
-            <h2>Last Round</h2>
-            <pre id="summaryBox" class="summary-box">No round played yet.</pre>
-          </section>
-        </div>
-
-        <div class="right-col">
-          <section class="card">
-            <h2>Session Data</h2>
-
-            <div class="tabs small-tabs">
-              <button id="overviewTabBtn" class="tab active" type="button">Overview</button>
-              <button id="achievementsTabBtn" class="tab" type="button">Achievements</button>
-              <button id="logTabBtn" class="tab" type="button">Log</button>
+          <div class="setup-grid compact-grid">
+            <div>
+              <label for="betInput">Bet</label>
+              <input id="betInput" type="number" min="1" value="100" />
             </div>
+            <div>
+              <label>Pot</label>
+              <div id="potValue" class="display-box">-</div>
+            </div>
+            <div>
+              <label>Risks</label>
+              <div id="riskCountValue" class="display-box">0/5</div>
+            </div>
+          </div>
 
-            <div id="overviewTab" class="tab-panel">
-              <pre id="overviewText" class="summary-box small-box"></pre>
+          <div class="round-grid">
+            <div class="panel">
+              <span class="panel-label">Your Value</span>
+              <div id="playerValue" class="big-number">-</div>
             </div>
 
-            <div id="achievementsTab" class="tab-panel hidden">
-              <pre id="achievementsText" class="summary-box small-box"></pre>
+            <div class="panel">
+              <span class="panel-label">Shadow</span>
+              <div id="shadowValue" class="big-number">?</div>
             </div>
+          </div>
 
-            <div id="logTab" class="tab-panel hidden">
-              <pre id="logText" class="summary-box small-box"></pre>
-            </div>
-          </section>
-        </div>
+          <div class="subinfo">
+            <div id="multiplierValue">Multiplier: -</div>
+            <div id="payoutValue">SAFE Payout: -</div>
+          </div>
+
+          <div id="gameMessage" class="message info">Drücke auf „Neue Runde“.</div>
+
+          <div class="button-row">
+            <button id="startBtn" class="btn btn-gold" type="button">Neue Runde</button>
+            <button id="riskBtn" class="btn btn-danger" type="button" disabled>Risk</button>
+            <button id="safeBtn" class="btn btn-success" type="button" disabled>Safe</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Letzte Runde</h2>
+          <pre id="summaryBox" class="summary-box">Noch keine Runde gespielt.</pre>
+        </section>
       </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=60"></script>
+  <script src="app.js?v=70"></script>
 </body>
 </html>
