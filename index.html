@@ -3,14 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supabase Auth Test</title>
+  <title>Shadow Roll</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="page">
-    <section class="card">
-      <h1>Supabase Auth Test</h1>
-      <p class="muted">Nur Registrierung / Login / Logout zum Testen.</p>
+    <header class="topbar">
+      <div>
+        <h1>🎲 Shadow Roll</h1>
+        <p class="muted">Risk. Safe. Shadow.</p>
+      </div>
+      <button id="logoutBtn" class="btn btn-danger hidden" type="button">Logout</button>
+    </header>
+
+    <!-- AUTH -->
+    <section id="authCard" class="card auth-card">
+      <h2>Login / Registrierung</h2>
 
       <div class="tabs">
         <button id="showLoginBtn" class="tab active" type="button">Login</button>
@@ -30,21 +38,101 @@
         <button id="registerBtn" class="btn btn-primary" type="button">Registrieren</button>
       </div>
 
-      <div id="messageBox" class="message info">Bereit.</div>
+      <div id="authMessage" class="message info">Bitte einloggen oder registrieren.</div>
     </section>
 
-    <section id="profileCard" class="card hidden">
-      <h2>Eingeloggt</h2>
-      <p><strong>User ID:</strong> <span id="userIdValue">-</span></p>
-      <p><strong>E-Mail:</strong> <span id="emailValue">-</span></p>
-      <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
-      <p><strong>Coins:</strong> <span id="coinsValue">-</span></p>
+    <!-- APP -->
+    <section id="appCard" class="hidden">
+      <div class="stats-grid">
+        <div class="card stat-card">
+          <span class="label">Username</span>
+          <span id="usernameValue" class="value">-</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Coins</span>
+          <span id="coinsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Games</span>
+          <span id="gamesValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Wins</span>
+          <span id="winsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Losses</span>
+          <span id="lossesValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Winrate</span>
+          <span id="winrateValue" class="value">0%</span>
+        </div>
+      </div>
 
-      <button id="logoutBtn" class="btn btn-danger" type="button">Logout</button>
+      <div class="main-grid">
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2>Spiel</h2>
+              <p id="modeDesc" class="muted small">Ausgeglichener Standardmodus.</p>
+            </div>
+
+            <div class="mode-row">
+              <button class="mode-btn" data-mode="easy" type="button">Easy</button>
+              <button class="mode-btn active" data-mode="normal" type="button">Normal</button>
+              <button class="mode-btn" data-mode="hard" type="button">Hard</button>
+            </div>
+          </div>
+
+          <div class="setup-grid">
+            <div>
+              <label for="betInput">Bet</label>
+              <input id="betInput" type="number" min="1" value="100" />
+            </div>
+            <div>
+              <label>Aktueller Pot</label>
+              <div id="potValue" class="display-box">-</div>
+            </div>
+            <div>
+              <label>Risks</label>
+              <div id="riskCountValue" class="display-box">0</div>
+            </div>
+            <div>
+              <label>Potenzialer Gewinn</label>
+              <div id="payoutValue" class="display-box">-</div>
+            </div>
+          </div>
+
+          <div class="game-panels">
+            <div class="panel">
+              <span class="panel-label">Dein Wert</span>
+              <div id="playerValue" class="big-number">-</div>
+            </div>
+            <div class="panel">
+              <span class="panel-label">Shadow</span>
+              <div id="shadowValue" class="big-number">?</div>
+            </div>
+          </div>
+
+          <div id="gameMessage" class="message info">Drücke auf „Neue Runde“.</div>
+
+          <div class="button-row">
+            <button id="startBtn" class="btn btn-gold" type="button">Neue Runde</button>
+            <button id="riskBtn" class="btn btn-danger" type="button" disabled>Risk</button>
+            <button id="safeBtn" class="btn btn-success" type="button" disabled>Safe</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Letzte Runde</h2>
+          <pre id="summaryBox" class="summary-box">Noch keine Runde gespielt.</pre>
+        </section>
+      </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=41"></script>
+  <script src="app.js?v=50"></script>
 </body>
 </html>
