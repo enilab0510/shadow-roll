@@ -5,20 +5,20 @@ const STARTING_COINS = 20000;
 const MODES = {
   Easy: {
     desc: "Softer losses, smaller wins.",
-    riskUpMax: 20,
-    riskDownMax: 10,
+    rewardBoost: 0.9,
+    lossProtection: 3,
     payoutStep: 0.22,
   },
   Normal: {
     desc: "Balanced standard mode.",
-    riskUpMax: 17,
-    riskDownMax: 14,
+    rewardBoost: 0.95,
+    lossProtection: 0,
     payoutStep: 0.3,
   },
   Hardcore: {
     desc: "Harder, riskier, more pressure.",
-    riskUpMax: 15,
-    riskDownMax: 18,
+    rewardBoost: 1.0,
+    lossProtection: 0,
     payoutStep: 0.38,
   },
 };
@@ -85,12 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function setAuthMessage(text, type = "info") {
     authMessage.textContent = text;
     authMessage.className = `message ${type}`;
-    console.log(text);
+    console.log(`[AUTH] ${text}`);
   }
 
   function setGameMessage(text, type = "info") {
     gameMessage.textContent = text;
     gameMessage.className = `message ${type}`;
+    console.log(`[GAME] ${text}`);
   }
 
   function showLogin() {
@@ -115,10 +116,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return MODES[currentMode];
   }
 
+  function getCurrentMultiplier() {
+    if (!round.active) return 0;
+    return 1 + round.riskCount * getMode().payoutStep;
+  }
+
   function getPotentialPayout() {
     if (!round.active) return 0;
-    const multi = 1 + round.riskCount * getMode().payoutStep;
-    return Math.round(round.bet * multi);
+    const raw = round.bet * getCurrentMultiplier() * getMode().rewardBoost;
+    return Math.max(1, Math.round(raw));
   }
 
   function refreshProfileUI() {
@@ -132,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       profile.games > 0
         ? ((profile.wins / profile.games) * 100).toFixed(1)
         : "0.0";
+
     winrateValue.textContent = `${rate}%`;
   }
 
@@ -142,14 +149,14 @@ document.addEventListener("DOMContentLoaded", () => {
     playerValue.textContent = round.active ? String(round.playerRoll) : "-";
     shadowValue.textContent = round.active ? "?" : "?";
     multiplierValue.textContent = round.active
-      ? `Multiplier: x${(1 + round.riskCount * getMode().payoutStep).toFixed(2)}`
+      ? `Multiplier: x${getCurrentMultiplier().toFixed(2)}`
       : "Multiplier: -";
     payoutValue.textContent = round.active
       ? `SAFE Payout: ${getPotentialPayout()}`
       : "SAFE Payout: -";
 
     startBtn.disabled = round.active;
-    riskBtn.disabled = !round.active;
+    riskBtn.disabled = !round.active || round.riskCount >= 5;
     safeBtn.disabled = !round.active;
   }
 
@@ -197,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .single();
 
     if (error) throw error;
+
     profile = data;
     refreshProfileUI();
   }
@@ -246,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
         password,
         options: {
           data: { username },
+          emailRedirectTo: window.location.origin,
         },
       });
 
@@ -254,8 +263,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (error) throw error;
 
       if (data.user && !data.session) {
-        setAuthMessage("Registrierung erfolgreich. Bitte E-Mail bestätigen.", "success");
-        showLogin();
+        setAuthMessage("Registriert. Login läuft...", "info");
+
+        const loginResult = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (loginResult.error) throw loginResult.error;
+
+        await enterApp();
+        setAuthMessage("Erfolgreich registriert & eingeloggt!", "success");
         return;
       }
 
@@ -279,12 +297,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setAuthMessage("Login läuft...", "info");
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
-      console.log("LOGIN RESULT:", data, error);
 
       if (error) throw error;
 
@@ -324,6 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!profile) return;
 
       const bet = parseInt(betInput.value, 10);
+
       if (!bet || bet < 1) {
         setGameMessage("Bet muss mindestens 1 sein.", "error");
         return;
@@ -352,25 +369,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // WICHTIG: Risk ist jetzt kompletter Neuwurf 1-100, wie im Python-Script
   riskBtn.addEventListener("click", () => {
     if (!round.active) return;
+    if (round.riskCount >= 5) return;
 
     const old = round.playerRoll;
-    const up = rand(0, getMode().riskUpMax);
-    const down = rand(0, getMode().riskDownMax);
-
-    let next = old + up - down;
-    if (next < 1) next = 1;
-    if (next > 100) next = 100;
+    const next = rand(1, 100);
 
     round.playerRoll = next;
     round.riskCount += 1;
 
     refreshGameUI();
 
-    if (next > old) setGameMessage(`Risk war gut. Neuer Wert: ${next}`, "success");
-    else if (next < old) setGameMessage(`Risk war schlecht. Neuer Wert: ${next}`, "error");
-    else setGameMessage(`Kein Unterschied. Wert bleibt ${next}`, "info");
+    if (next > old) {
+      setGameMessage(`Risk war gut. ${old} → ${next}`, "success");
+    } else if (next < old) {
+      setGameMessage(`Risk war schlecht. ${old} → ${next}`, "error");
+    } else {
+      setGameMessage(`Kein Unterschied. Wert bleibt ${next}`, "info");
+    }
   });
 
   safeBtn.addEventListener("click", async () => {
@@ -405,9 +423,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setGameMessage(`Gewonnen. Shadow war ${round.shadowRoll}.`, "success");
       } else {
+        const refund = getMode().lossProtection || 0;
         const newLosses = (profile.losses || 0) + 1;
+        const newCoins = profile.coins + refund;
 
         await updateProfile({
+          coins: newCoins,
           games: newGames,
           losses: newLosses,
         });
@@ -418,9 +439,12 @@ document.addEventListener("DOMContentLoaded", () => {
           `Your Value: ${round.playerRoll}\n` +
           `Shadow: ${round.shadowRoll}\n` +
           `Risks: ${round.riskCount}\n` +
-          `Result: LOSS`;
+          `Result: LOSS${refund ? `\nRefund: ${refund}` : ""}`;
 
-        setGameMessage(`Verloren. Shadow war ${round.shadowRoll}.`, "error");
+        setGameMessage(
+          `Verloren. Shadow war ${round.shadowRoll}.${refund ? ` Refund ${refund}.` : ""}`,
+          "error"
+        );
       }
 
       resetRound();
