@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://livqhbwvdxafhrbltnxn.supabase.co";
+const SUPABASE_URL = "https://livqhwbvdxafhrbltnxn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -57,76 +57,67 @@ const LOSE_FLAVOR = [
   "You were too greedy.",
 ];
 
-const DROP_FLAVOR = [
-  "Smart escape.",
-  "You got out just in time.",
-  "Clean exit.",
-  "Saved what you could.",
-  "A tactical retreat.",
-];
+function $(id) {
+  return document.getElementById(id);
+}
 
-// AUTH
-const authSection = document.getElementById("authSection");
-const appSection = document.getElementById("appSection");
-const loginBox = document.getElementById("loginBox");
-const registerBox = document.getElementById("registerBox");
-const showLoginBtn = document.getElementById("showLoginBtn");
-const showRegisterBtn = document.getElementById("showRegisterBtn");
-const loginBtn = document.getElementById("loginBtn");
-const registerBtn = document.getElementById("registerBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
-const registerUsername = document.getElementById("registerUsername");
-const registerEmail = document.getElementById("registerEmail");
-const registerPassword = document.getElementById("registerPassword");
+const authSection = $("authSection");
+const appSection = $("appSection");
+const loginBox = $("loginBox");
+const registerBox = $("registerBox");
+const showLoginBtn = $("showLoginBtn");
+const showRegisterBtn = $("showRegisterBtn");
+const loginBtn = $("loginBtn");
+const registerBtn = $("registerBtn");
+const logoutBtn = $("logoutBtn");
+const loginEmail = $("loginEmail");
+const loginPassword = $("loginPassword");
+const registerUsername = $("registerUsername");
+const registerEmail = $("registerEmail");
+const registerPassword = $("registerPassword");
 
-// PROFILE
-const usernameValue = document.getElementById("usernameValue");
-const coinsValue = document.getElementById("coinsValue");
-const recordValue = document.getElementById("recordValue");
-const gamesValue = document.getElementById("gamesValue");
-const winrateValue = document.getElementById("winrateValue");
-const adminValue = document.getElementById("adminValue");
-const winsValue = document.getElementById("winsValue");
-const lossesValue = document.getElementById("lossesValue");
-const streakValue = document.getElementById("streakValue");
-const bestStreakValue = document.getElementById("bestStreakValue");
+const usernameValue = $("usernameValue");
+const coinsValue = $("coinsValue");
+const recordValue = $("recordValue");
+const gamesValue = $("gamesValue");
+const winrateValue = $("winrateValue");
+const adminValue = $("adminValue");
+const winsValue = $("winsValue");
+const lossesValue = $("lossesValue");
+const streakValue = $("streakValue");
+const bestStreakValue = $("bestStreakValue");
 
-// GAME
-const modeDesc = document.getElementById("modeDesc");
-const betInput = document.getElementById("betInput");
-const eventBadge = document.getElementById("eventBadge");
-const hintCostBox = document.getElementById("hintCostBox");
-const dropPayoutBox = document.getElementById("dropPayoutBox");
-const playerValue = document.getElementById("playerValue");
-const streakBadge = document.getElementById("streakBadge");
-const potValue = document.getElementById("potValue");
-const multiplierText = document.getElementById("multiplierText");
-const riskText = document.getElementById("riskText");
-const riskFill = document.getElementById("riskFill");
-const hintText = document.getElementById("hintText");
-const statusBox = document.getElementById("statusBox");
-const summaryBox = document.getElementById("summaryBox");
+const modeDesc = $("modeDesc");
+const betInput = $("betInput");
+const eventBadge = $("eventBadge");
+const hintCostBox = $("hintCostBox");
+const dropPayoutBox = $("dropPayoutBox");
+const playerValue = $("playerValue");
+const streakBadge = $("streakBadge");
+const potValue = $("potValue");
+const multiplierText = $("multiplierText");
+const riskText = $("riskText");
+const riskFill = $("riskFill");
+const hintText = $("hintText");
+const statusBox = $("statusBox");
+const summaryBox = $("summaryBox");
 
-const startBtn = document.getElementById("startBtn");
-const safeBtn = document.getElementById("safeBtn");
-const riskBtn = document.getElementById("riskBtn");
-const hintBtn = document.getElementById("hintBtn");
-const dropBtn = document.getElementById("dropBtn");
+const startBtn = $("startBtn");
+const safeBtn = $("safeBtn");
+const riskBtn = $("riskBtn");
+const hintBtn = $("hintBtn");
+const dropBtn = $("dropBtn");
 
-// ADMIN
-const adminSection = document.getElementById("adminSection");
-const giftUsername = document.getElementById("giftUsername");
-const giftAmount = document.getElementById("giftAmount");
-const giftMessage = document.getElementById("giftMessage");
-const giftBtn = document.getElementById("giftBtn");
+const adminSection = $("adminSection");
+const giftUsername = $("giftUsername");
+const giftAmount = $("giftAmount");
+const giftMessage = $("giftMessage");
+const giftBtn = $("giftBtn");
 
-// REVEAL
-const revealOverlay = document.getElementById("revealOverlay");
-const revealCountdown = document.getElementById("revealCountdown");
-const shadowNumber = document.getElementById("shadowNumber");
-const shadowFlavor = document.getElementById("shadowFlavor");
+const revealOverlay = $("revealOverlay");
+const revealCountdown = $("revealCountdown");
+const shadowNumber = $("shadowNumber");
+const shadowFlavor = $("shadowFlavor");
 
 const modeButtons = [...document.querySelectorAll(".mode-btn")];
 
@@ -152,6 +143,7 @@ let round = {
 };
 
 function setStatus(text, type = "info") {
+  if (!statusBox) return;
   statusBox.textContent = text;
   statusBox.className = `status-box ${type}`;
 }
@@ -173,14 +165,7 @@ function getCurrentMaxRisks() {
 }
 
 function getMultiplier(riskCount) {
-  const table = {
-    0: 1.03,
-    1: 1.16,
-    2: 1.4,
-    3: 1.78,
-    4: 2.4,
-    5: 3.2,
-  };
+  const table = { 0: 1.03, 1: 1.16, 2: 1.4, 3: 1.78, 4: 2.4, 5: 3.2 };
   return table[riskCount] || 3.2;
 }
 
@@ -285,21 +270,21 @@ function generateHint(shadow, quality) {
 }
 
 function setLoginMode() {
-  loginBox.classList.remove("hidden");
-  registerBox.classList.add("hidden");
-  showLoginBtn.classList.add("active");
-  showRegisterBtn.classList.remove("active");
+  if (loginBox) loginBox.classList.remove("hidden");
+  if (registerBox) registerBox.classList.add("hidden");
+  if (showLoginBtn) showLoginBtn.classList.add("active");
+  if (showRegisterBtn) showRegisterBtn.classList.remove("active");
 }
 
 function setRegisterMode() {
-  loginBox.classList.add("hidden");
-  registerBox.classList.remove("hidden");
-  showLoginBtn.classList.remove("active");
-  showRegisterBtn.classList.add("active");
+  if (loginBox) loginBox.classList.add("hidden");
+  if (registerBox) registerBox.classList.remove("hidden");
+  if (showLoginBtn) showLoginBtn.classList.remove("active");
+  if (showRegisterBtn) showRegisterBtn.classList.add("active");
 }
 
-showLoginBtn.addEventListener("click", setLoginMode);
-showRegisterBtn.addEventListener("click", setRegisterMode);
+if (showLoginBtn) showLoginBtn.addEventListener("click", setLoginMode);
+if (showRegisterBtn) showRegisterBtn.addEventListener("click", setRegisterMode);
 
 modeButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -345,14 +330,14 @@ async function loadProfile() {
 
   profile = data;
 
-  authSection.classList.add("hidden");
-  appSection.classList.remove("hidden");
-  logoutBtn.classList.remove("hidden");
+  if (authSection) authSection.classList.add("hidden");
+  if (appSection) appSection.classList.remove("hidden");
+  if (logoutBtn) logoutBtn.classList.remove("hidden");
 
   if (profile.is_admin) {
-    adminSection.classList.remove("hidden");
+    if (adminSection) adminSection.classList.remove("hidden");
   } else {
-    adminSection.classList.add("hidden");
+    if (adminSection) adminSection.classList.add("hidden");
   }
 
   refreshUI();
@@ -361,42 +346,43 @@ async function loadProfile() {
 function refreshUI() {
   if (!profile) return;
 
-  usernameValue.textContent = profile.username ?? "-";
-  coinsValue.textContent = profile.coins ?? 0;
-  recordValue.textContent = profile.record ?? 0;
-  gamesValue.textContent = profile.games ?? 0;
-  adminValue.textContent = profile.is_admin ? "Ja" : "Nein";
-  winsValue.textContent = profile.wins ?? 0;
-  lossesValue.textContent = profile.losses ?? 0;
-  streakValue.textContent = profile.streak ?? 0;
-  bestStreakValue.textContent = profile.best_streak ?? 0;
+  if (usernameValue) usernameValue.textContent = profile.username ?? "-";
+  if (coinsValue) coinsValue.textContent = profile.coins ?? 0;
+  if (recordValue) recordValue.textContent = profile.record ?? 0;
+  if (gamesValue) gamesValue.textContent = profile.games ?? 0;
+  if (adminValue) adminValue.textContent = profile.is_admin ? "Ja" : "Nein";
+  if (winsValue) winsValue.textContent = profile.wins ?? 0;
+  if (lossesValue) lossesValue.textContent = profile.losses ?? 0;
+  if (streakValue) streakValue.textContent = profile.streak ?? 0;
+  if (bestStreakValue) bestStreakValue.textContent = profile.best_streak ?? 0;
 
   const winrate = profile.games > 0 ? ((profile.wins / profile.games) * 100).toFixed(1) : "0.0";
-  winrateValue.textContent = `${winrate}%`;
+  if (winrateValue) winrateValue.textContent = `${winrate}%`;
 
-  modeDesc.textContent = getMode().desc;
-  eventBadge.textContent = round.active ? round.eventText : "-";
-  hintCostBox.textContent = round.active && !round.hintUsed ? hintCost() : "-";
-  dropPayoutBox.textContent = round.betLockedIn ? dropPayout() : "-";
-  playerValue.textContent = round.playerValue ?? "-";
-  potValue.textContent = round.betLockedIn ? round.bet : "-";
-  multiplierText.textContent = round.active ? `Multiplier: x${currentMultiplier().toFixed(2)}` : "Multiplier: -";
-  riskText.textContent = `Risks: ${round.riskCount}/${getCurrentMaxRisks()}`;
-  hintText.textContent = round.hintText || "-";
-  riskFill.style.width = `${(round.riskCount / Math.max(1, getCurrentMaxRisks())) * 100}%`;
+  if (modeDesc) modeDesc.textContent = getMode().desc;
+  if (eventBadge) eventBadge.textContent = round.active ? round.eventText : "-";
+  if (hintCostBox) hintCostBox.textContent = round.active && !round.hintUsed ? hintCost() : "-";
+  if (dropPayoutBox) dropPayoutBox.textContent = round.betLockedIn ? dropPayout() : "-";
+  if (playerValue) playerValue.textContent = round.playerValue ?? "-";
+  if (potValue) potValue.textContent = round.betLockedIn ? round.bet : "-";
+  if (multiplierText) multiplierText.textContent = round.active ? `Multiplier: x${currentMultiplier().toFixed(2)}` : "Multiplier: -";
+  if (riskText) riskText.textContent = `Risks: ${round.riskCount}/${getCurrentMaxRisks()}`;
+  if (hintText) hintText.textContent = round.hintText || "-";
+  if (riskFill) riskFill.style.width = `${(round.riskCount / Math.max(1, getCurrentMaxRisks())) * 100}%`;
 
-  if (profile.streak >= 5) streakBadge.textContent = "⚡ Massive streak";
-  else if (profile.streak >= 3) streakBadge.textContent = "🔥 Hot streak";
-  else if (profile.streak >= 1) streakBadge.textContent = "✨ Streak active";
-  else streakBadge.textContent = "No active streak";
+  if (streakBadge) {
+    if (profile.streak >= 5) streakBadge.textContent = "⚡ Massive streak";
+    else if (profile.streak >= 3) streakBadge.textContent = "🔥 Hot streak";
+    else if (profile.streak >= 1) streakBadge.textContent = "✨ Streak active";
+    else streakBadge.textContent = "No active streak";
+  }
 
   const controlsEnabled = round.active && !round.animating;
-
-  startBtn.disabled = round.active || round.animating;
-  safeBtn.disabled = !controlsEnabled;
-  riskBtn.disabled = !(controlsEnabled && round.riskCount < getCurrentMaxRisks());
-  hintBtn.disabled = !(controlsEnabled && !round.hintUsed);
-  dropBtn.disabled = !controlsEnabled;
+  if (startBtn) startBtn.disabled = round.active || round.animating;
+  if (safeBtn) safeBtn.disabled = !controlsEnabled;
+  if (riskBtn) riskBtn.disabled = !(controlsEnabled && round.riskCount < getCurrentMaxRisks());
+  if (hintBtn) hintBtn.disabled = !(controlsEnabled && !round.hintUsed);
+  if (dropBtn) dropBtn.disabled = !controlsEnabled;
 }
 
 function resetRound() {
@@ -442,6 +428,11 @@ function animatePlayerValue(finalValue, callback) {
 }
 
 async function revealShadowSequence(won, onDone) {
+  if (!revealOverlay || !revealCountdown || !shadowNumber || !shadowFlavor) {
+    onDone();
+    return;
+  }
+
   revealOverlay.classList.remove("hidden");
   revealCountdown.classList.remove("hidden");
   shadowNumber.classList.add("hidden");
@@ -467,313 +458,324 @@ async function revealShadowSequence(won, onDone) {
   onDone();
 }
 
-startBtn.addEventListener("click", async () => {
-  if (!profile || round.active || round.animating) return;
+if (startBtn) {
+  startBtn.addEventListener("click", async () => {
+    if (!profile || round.active || round.animating) return;
 
-  const bet = parseInt(betInput.value, 10);
+    const bet = parseInt(betInput?.value || "0", 10);
 
-  if (!bet || bet < 1) {
-    alert("Bet muss mindestens 1 sein.");
-    return;
-  }
+    if (!bet || bet < 1) {
+      alert("Bet muss mindestens 1 sein.");
+      return;
+    }
 
-  if (bet > profile.coins) {
-    alert("Nicht genug Coins.");
-    return;
-  }
+    if (bet > profile.coins) {
+      alert("Nicht genug Coins.");
+      return;
+    }
 
-  const [eventName, eventText] = choice(EVENT_POOL);
+    const [eventName, eventText] = choice(EVENT_POOL);
 
-  try {
-    await updateProfile({
-      coins: profile.coins - bet,
-    });
+    try {
+      await updateProfile({
+        coins: profile.coins - bet,
+      });
 
-    round.active = true;
-    round.betLockedIn = true;
-    round.bet = bet;
-    round.shadow = rand(1, 100);
-    round.riskCount = 0;
-    round.hintUsed = false;
-    round.hintText = null;
-    round.hintStrength = 0;
-    round.hintCostPaid = 0;
-    round.eventName = eventName;
-    round.eventText = eventText;
+      round.active = true;
+      round.betLockedIn = true;
+      round.bet = bet;
+      round.shadow = rand(1, 100);
+      round.riskCount = 0;
+      round.hintUsed = false;
+      round.hintText = null;
+      round.hintStrength = 0;
+      round.hintCostPaid = 0;
+      round.eventName = eventName;
+      round.eventText = eventText;
 
-    setStatus("Round started.\nRolling your value...", "info");
+      setStatus("Round started.\nRolling your value...", "info");
+      refreshUI();
+
+      const finalValue = rand(1, 100);
+      animatePlayerValue(finalValue, (value) => {
+        round.startValue = value;
+        round.playerValue = value;
+        setStatus("Round started. You can now choose SAFE, RISK, HINT, or DROP.", "info");
+        refreshUI();
+      });
+    } catch (err) {
+      alert("Start Fehler: " + err.message);
+    }
+  });
+}
+
+if (riskBtn) {
+  riskBtn.addEventListener("click", () => {
+    if (!round.active || round.animating || round.playerValue == null) return;
+    if (round.riskCount >= getCurrentMaxRisks()) return;
+
+    const old = round.playerValue;
+    round.riskCount += 1;
+    setStatus("Risking it...", "danger");
     refreshUI();
 
     const finalValue = rand(1, 100);
     animatePlayerValue(finalValue, (value) => {
-      round.startValue = value;
-      round.playerValue = value;
-      setStatus("Round started. You can now choose SAFE, RISK, HINT, or DROP.", "info");
+      if (value > old) setStatus(`Nice roll! +${value - old}`, "success");
+      else if (value < old) setStatus(`Bad roll... ${value - old}`, "danger");
+      else setStatus("No change.", "info");
       refreshUI();
     });
-  } catch (err) {
-    alert("Start Fehler: " + err.message);
-  }
-});
-
-riskBtn.addEventListener("click", () => {
-  if (!round.active || round.animating || round.playerValue == null) return;
-  if (round.riskCount >= getCurrentMaxRisks()) return;
-
-  const old = round.playerValue;
-  round.riskCount += 1;
-  setStatus("Risking it...", "danger");
-  refreshUI();
-
-  const finalValue = rand(1, 100);
-  animatePlayerValue(finalValue, (value) => {
-    if (value > old) setStatus(`Nice roll! +${value - old}`, "success");
-    else if (value < old) setStatus(`Bad roll... ${value - old}`, "danger");
-    else setStatus("No change.", "info");
-    refreshUI();
   });
-});
+}
 
-hintBtn.addEventListener("click", async () => {
-  if (!round.active || round.animating || round.hintUsed || round.shadow == null) return;
+if (hintBtn) {
+  hintBtn.addEventListener("click", async () => {
+    if (!round.active || round.animating || round.hintUsed || round.shadow == null) return;
 
-  const cost = hintCost();
-  if (cost > profile.coins) {
-    alert(`Hint kostet ${cost} Coins.`);
-    return;
-  }
+    const cost = hintCost();
+    if (cost > profile.coins) {
+      alert(`Hint kostet ${cost} Coins.`);
+      return;
+    }
 
-  const [text, strength] = generateHint(round.shadow, getMode().hintQuality);
+    const [text, strength] = generateHint(round.shadow, getMode().hintQuality);
 
-  try {
-    await updateProfile({
-      coins: profile.coins - cost,
-    });
-
-    round.hintUsed = true;
-    round.hintText = text;
-    round.hintStrength = strength;
-    round.hintCostPaid = cost;
-
-    setStatus(`Intel acquired for ${cost} coins.\nHint active: max ${HINT_MAX_RISKS} risks now.`, "warn");
-    refreshUI();
-  } catch (err) {
-    alert("Hint Fehler: " + err.message);
-  }
-});
-
-safeBtn.addEventListener("click", async () => {
-  if (!round.active || round.animating || round.playerValue == null || round.shadow == null) return;
-
-  round.animating = true;
-  const won = round.playerValue > round.shadow;
-
-  await revealShadowSequence(won, async () => {
     try {
-      const games = (profile.games || 0) + 1;
-      let patch = {
-        games,
-      };
+      await updateProfile({
+        coins: profile.coins - cost,
+      });
 
-      if (won) {
-        const payout = safePayout();
-        const profit = payout - round.bet;
-        const wins = (profile.wins || 0) + 1;
-        const streak = (profile.streak || 0) + 1;
-        const bestStreak = Math.max(profile.best_streak || 0, streak);
+      round.hintUsed = true;
+      round.hintText = text;
+      round.hintStrength = strength;
+      round.hintCostPaid = cost;
+
+      setStatus(`Intel acquired for ${cost} coins.\nHint active: max ${HINT_MAX_RISKS} risks now.`, "warn");
+      refreshUI();
+    } catch (err) {
+      alert("Hint Fehler: " + err.message);
+    }
+  });
+}
+
+if (safeBtn) {
+  safeBtn.addEventListener("click", async () => {
+    if (!round.active || round.animating || round.playerValue == null || round.shadow == null) return;
+
+    round.animating = true;
+    const won = round.playerValue > round.shadow;
+
+    await revealShadowSequence(won, async () => {
+      try {
+        const games = (profile.games || 0) + 1;
+        let patch = { games };
+
+        if (won) {
+          const payout = safePayout();
+          const profit = payout - round.bet;
+          const wins = (profile.wins || 0) + 1;
+          const streak = (profile.streak || 0) + 1;
+          const bestStreak = Math.max(profile.best_streak || 0, streak);
+          const coins = profile.coins + payout;
+          const record = Math.max(profile.record || STARTING_COINS, coins);
+
+          patch = { ...patch, coins, record, wins, streak, best_streak: bestStreak };
+
+          if (summaryBox) {
+            summaryBox.textContent =
+              `Start Value: ${round.startValue}\n` +
+              `Final Value: ${round.playerValue}\n` +
+              `Risks: ${round.riskCount}\n` +
+              `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
+              `Shadow: ${round.shadow}\n` +
+              `Event: ${round.eventText}\n` +
+              `Result: WIN | Payout ${payout} | Profit +${profit}`;
+          }
+
+          setStatus(`YOU WIN\nShadow ${round.shadow}\nPayout ${payout}\nProfit +${profit}`, "success");
+        } else {
+          const refund = getMode().lossProtection;
+          const losses = (profile.losses || 0) + 1;
+          const coins = profile.coins + refund;
+
+          patch = { ...patch, coins, losses, streak: 0 };
+
+          if (summaryBox) {
+            summaryBox.textContent =
+              `Start Value: ${round.startValue}\n` +
+              `Final Value: ${round.playerValue}\n` +
+              `Risks: ${round.riskCount}\n` +
+              `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
+              `Shadow: ${round.shadow}\n` +
+              `Event: ${round.eventText}\n` +
+              `Result: LOSS | Pot lost${refund ? ` | Refund ${refund}` : ""}`;
+          }
+
+          setStatus(`YOU LOSE\nShadow ${round.shadow}${refund ? `\nRefund ${refund}` : ""}`, "danger");
+        }
+
+        await updateProfile(patch);
+        resetRound();
+        refreshUI();
+      } catch (err) {
+        alert("SAFE Fehler: " + err.message);
+        resetRound();
+        refreshUI();
+      }
+    });
+  });
+}
+
+if (dropBtn) {
+  dropBtn.addEventListener("click", async () => {
+    if (!round.active || round.animating || round.shadow == null) return;
+
+    round.animating = true;
+
+    const payout = dropPayout();
+    const loss = round.bet - payout;
+    const wouldHaveWon = round.playerValue > round.shadow;
+
+    await revealShadowSequence(wouldHaveWon, async () => {
+      try {
+        const games = (profile.games || 0) + 1;
         const coins = profile.coins + payout;
         const record = Math.max(profile.record || STARTING_COINS, coins);
 
-        patch = {
-          ...patch,
-          coins,
-          record,
-          wins,
-          streak,
-          best_streak: bestStreak,
-        };
+        await updateProfile({ coins, record, games });
 
-        summaryBox.textContent =
-          `Start Value: ${round.startValue}\n` +
-          `Final Value: ${round.playerValue}\n` +
-          `Risks: ${round.riskCount}\n` +
-          `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
-          `Shadow: ${round.shadow}\n` +
-          `Event: ${round.eventText}\n` +
-          `Result: WIN | Payout ${payout} | Profit +${profit}`;
+        if (summaryBox) {
+          summaryBox.textContent =
+            `Start Value: ${round.startValue}\n` +
+            `Final Value: ${round.playerValue}\n` +
+            `Risks: ${round.riskCount}\n` +
+            `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
+            `Shadow: ${round.shadow}\n` +
+            `Would Have Won: ${wouldHaveWon ? "Yes" : "No"}\n` +
+            `Event: ${round.eventText}\n` +
+            `Result: DROP | Recovered ${payout} | Loss ${loss}`;
+        }
 
-        setStatus(`YOU WIN\nShadow ${round.shadow}\nPayout ${payout}\nProfit +${profit}`, "success");
-      } else {
-        const refund = getMode().lossProtection;
-        const losses = (profile.losses || 0) + 1;
-        const coins = profile.coins + refund;
+        setStatus(
+          `You escaped.\nRecovered ${payout}\nLoss -${loss}\nShadow was ${round.shadow}\n${wouldHaveWon ? "You would have won." : "You would have lost."}`,
+          "info"
+        );
 
-        patch = {
-          ...patch,
-          coins,
-          losses,
-          streak: 0,
-        };
+        resetRound();
+        refreshUI();
+      } catch (err) {
+        alert("DROP Fehler: " + err.message);
+        resetRound();
+        refreshUI();
+      }
+    });
+  });
+}
 
-        summaryBox.textContent =
-          `Start Value: ${round.startValue}\n` +
-          `Final Value: ${round.playerValue}\n` +
-          `Risks: ${round.riskCount}\n` +
-          `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
-          `Shadow: ${round.shadow}\n` +
-          `Event: ${round.eventText}\n` +
-          `Result: LOSS | Pot lost${refund ? ` | Refund ${refund}` : ""}`;
+if (giftBtn) {
+  giftBtn.addEventListener("click", async () => {
+    try {
+      const username = giftUsername?.value.trim();
+      const amount = parseInt(giftAmount?.value || "0", 10);
+      const message = giftMessage?.value.trim() || "";
 
-        setStatus(`YOU LOSE\nShadow ${round.shadow}${refund ? `\nRefund ${refund}` : ""}`, "danger");
+      if (!username || !amount || amount < 1) {
+        alert("Bitte Username und Coins korrekt eingeben.");
+        return;
       }
 
-      await updateProfile(patch);
-      resetRound();
-      refreshUI();
-    } catch (err) {
-      alert("SAFE Fehler: " + err.message);
-      resetRound();
-      refreshUI();
-    }
-  });
-});
-
-dropBtn.addEventListener("click", async () => {
-  if (!round.active || round.animating || round.shadow == null) return;
-
-  round.animating = true;
-
-  const payout = dropPayout();
-  const loss = round.bet - payout;
-  const wouldHaveWon = round.playerValue > round.shadow;
-
-  await revealShadowSequence(wouldHaveWon, async () => {
-    try {
-      const games = (profile.games || 0) + 1;
-      const coins = profile.coins + payout;
-      const record = Math.max(profile.record || STARTING_COINS, coins);
-
-      await updateProfile({
-        coins,
-        record,
-        games,
+      const { error } = await supabase.rpc("admin_gift_coins", {
+        target_username: username,
+        gift_amount: amount,
+        gift_message: message,
       });
 
-      summaryBox.textContent =
-        `Start Value: ${round.startValue}\n` +
-        `Final Value: ${round.playerValue}\n` +
-        `Risks: ${round.riskCount}\n` +
-        `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
-        `Shadow: ${round.shadow}\n` +
-        `Would Have Won: ${wouldHaveWon ? "Yes" : "No"}\n` +
-        `Event: ${round.eventText}\n` +
-        `Result: DROP | Recovered ${payout} | Loss ${loss}`;
+      if (error) throw error;
 
-      setStatus(
-        `You escaped.\nRecovered ${payout}\nLoss -${loss}\nShadow was ${round.shadow}\n${wouldHaveWon ? "You would have won." : "You would have lost."}`,
-        "info"
-      );
-
-      resetRound();
-      refreshUI();
+      alert("Coins gesendet!");
     } catch (err) {
-      alert("DROP Fehler: " + err.message);
-      resetRound();
-      refreshUI();
+      alert("Gift Fehler: " + err.message);
     }
   });
-});
+}
 
-// ADMIN
-giftBtn.addEventListener("click", async () => {
-  try {
-    const username = giftUsername.value.trim();
-    const amount = parseInt(giftAmount.value, 10);
-    const message = giftMessage.value.trim();
+if (loginBtn) {
+  loginBtn.addEventListener("click", async () => {
+    try {
+      const email = loginEmail?.value.trim() || "";
+      const password = loginPassword?.value || "";
 
-    if (!username || !amount || amount < 1) {
-      alert("Bitte Username und Coins korrekt eingeben.");
-      return;
+      if (!email || !password) {
+        alert("Bitte E-Mail und Passwort eingeben.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      await loadProfile();
+    } catch (err) {
+      alert("Login Fehler: " + err.message);
     }
+  });
+}
 
-    const { error } = await supabase.rpc("admin_gift_coins", {
-      target_username: username,
-      gift_amount: amount,
-      gift_message: message,
-    });
+if (registerBtn) {
+  registerBtn.addEventListener("click", async () => {
+    try {
+      const username = registerUsername?.value.trim() || "";
+      const email = registerEmail?.value.trim() || "";
+      const password = registerPassword?.value || "";
 
-    if (error) throw error;
+      if (!username || !email || !password) {
+        alert("Bitte Username, E-Mail und Passwort eingeben.");
+        return;
+      }
 
-    alert("Coins gesendet!");
-  } catch (err) {
-    alert("Gift Fehler: " + err.message);
-  }
-});
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username } },
+      });
 
-// AUTH ACTIONS
-loginBtn.addEventListener("click", async () => {
-  try {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: loginEmail.value.trim(),
-      password: loginPassword.value,
-    });
+      if (error) throw error;
 
-    if (error) throw error;
-    await loadProfile();
-  } catch (err) {
-    alert("Login Fehler: " + err.message);
-  }
-});
-
-registerBtn.addEventListener("click", async () => {
-  try {
-    const username = registerUsername.value.trim();
-    const email = registerEmail.value.trim();
-    const password = registerPassword.value;
-
-    if (!username || !email || !password) {
-      alert("Bitte alles ausfüllen.");
-      return;
+      alert("Registrierung erfolgreich. Jetzt einloggen.");
+      setLoginMode();
+    } catch (err) {
+      alert("Registrierung Fehler: " + err.message);
     }
+  });
+}
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username },
-      },
-    });
-
-    if (error) throw error;
-
-    alert("Registrierung erfolgreich. Jetzt einloggen.");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    currentUser = null;
+    profile = null;
+    resetRound();
+    if (appSection) appSection.classList.add("hidden");
+    if (authSection) authSection.classList.remove("hidden");
+    if (adminSection) adminSection.classList.add("hidden");
+    if (logoutBtn) logoutBtn.classList.add("hidden");
     setLoginMode();
-  } catch (err) {
-    alert("Registrierung Fehler: " + err.message);
-  }
-});
-
-logoutBtn.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  currentUser = null;
-  profile = null;
-  resetRound();
-  appSection.classList.add("hidden");
-  authSection.classList.remove("hidden");
-  adminSection.classList.add("hidden");
-  logoutBtn.classList.add("hidden");
-  setLoginMode();
-  setStatus('Press "New Round" to start.', "info");
-});
+    setStatus('Press "New Round" to start.', "info");
+  });
+}
 
 (async () => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  if (session) {
-    await loadProfile();
-  } else {
-    setLoginMode();
+    if (session) {
+      await loadProfile();
+    } else {
+      setLoginMode();
+    }
+  } catch (err) {
+    console.error(err);
   }
 })();
