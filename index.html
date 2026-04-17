@@ -3,180 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Roll Deluxe</title>
+  <title>Shadow Roll</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-  <div class="bg-orb orb-3"></div>
-
-  <div class="container">
-    <header class="topbar">
+  <div class="page">
+    <header class="header">
       <div>
-        <h1>🎲 Shadow Roll Deluxe</h1>
-        <p class="subtitle">Risk. Shadow. Timing.</p>
+        <h1>🎲 Shadow Roll</h1>
+        <p class="subtitle">Supabase Login + einfaches Risk Game</p>
       </div>
       <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
     </header>
 
-    <section id="authSection" class="card auth-card">
-      <h2>Login / Registrierung</h2>
-
-      <div class="tabs">
-        <button id="showLoginBtn" class="tab active">Login</button>
-        <button id="showRegisterBtn" class="tab">Registrieren</button>
-      </div>
-
-      <div id="loginBox">
-        <input id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email" />
-        <input id="loginPassword" type="password" placeholder="Passwort" autocomplete="current-password" />
-        <button id="loginBtn" class="btn btn-primary">Einloggen</button>
-      </div>
-
-      <div id="registerBox" class="hidden">
-        <input id="registerUsername" type="text" placeholder="Username" autocomplete="username" />
-        <input id="registerEmail" type="email" placeholder="E-Mail" autocomplete="email" />
-        <input id="registerPassword" type="password" placeholder="Passwort" autocomplete="new-password" />
-        <button id="registerBtn" class="btn btn-primary">Registrieren</button>
-      </div>
-    </section>
-
-    <section id="appSection" class="hidden">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Coins</span>
-          <span class="stat-value" id="coinsValue">0</span>
+    <main class="layout">
+      <section id="authCard" class="card auth-card">
+        <div class="tabs">
+          <button id="tabLogin" class="tab active">Login</button>
+          <button id="tabRegister" class="tab">Registrieren</button>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Record</span>
-          <span class="stat-value" id="recordValue">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Games</span>
-          <span class="stat-value" id="gamesValue">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Win Rate</span>
-          <span class="stat-value" id="winrateValue">0%</span>
-        </div>
-      </div>
 
-      <div class="main-grid">
-        <section class="card profile-card">
-          <h2>Profil</h2>
-          <div class="profile-list">
-            <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
-            <p><strong>Admin:</strong> <span id="adminValue">Nein</span></p>
-            <p><strong>Wins:</strong> <span id="winsValue">0</span></p>
-            <p><strong>Losses:</strong> <span id="lossesValue">0</span></p>
-            <p><strong>Streak:</strong> <span id="streakValue">0</span></p>
-            <p><strong>Best Streak:</strong> <span id="bestStreakValue">0</span></p>
+        <div id="loginPane">
+          <h2>Einloggen</h2>
+          <input id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+          <input id="loginPassword" type="password" placeholder="Passwort" autocomplete="current-password" />
+          <button id="loginBtn" class="btn btn-primary">Login</button>
+        </div>
+
+        <div id="registerPane" class="hidden">
+          <h2>Registrieren</h2>
+          <input id="registerUsername" type="text" placeholder="Username" autocomplete="username" />
+          <input id="registerEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+          <input id="registerPassword" type="password" placeholder="Passwort" autocomplete="new-password" />
+          <button id="registerBtn" class="btn btn-primary">Account erstellen</button>
+        </div>
+
+        <div id="authMessage" class="message info">Bitte einloggen oder registrieren.</div>
+      </section>
+
+      <section id="appCard" class="hidden">
+        <div class="grid-top">
+          <div class="card stat-card">
+            <span class="label">Username</span>
+            <span id="usernameValue" class="value">-</span>
           </div>
-        </section>
-
-        <section class="card game-card">
-          <div class="game-head">
-            <div>
-              <h2>Shadow Roll</h2>
-              <p id="modeDesc" class="muted">Softer losses, better hints, smaller wins.</p>
-            </div>
-
-            <div class="mode-switch">
-              <button class="mode-btn active" data-mode="Easy">Easy</button>
-              <button class="mode-btn" data-mode="Normal">Normal</button>
-              <button class="mode-btn" data-mode="Hardcore">Hardcore</button>
-            </div>
+          <div class="card stat-card">
+            <span class="label">Coins</span>
+            <span id="coinsValue" class="value">0</span>
           </div>
-
-          <div class="setup-grid">
-            <div class="setup-box">
-              <label for="betInput">Bet</label>
-              <input id="betInput" type="number" min="1" value="100" />
-            </div>
-
-            <div class="setup-box">
-              <label>Event</label>
-              <div id="eventBadge" class="mini-display">-</div>
-            </div>
-
-            <div class="setup-box">
-              <label>Hint Cost</label>
-              <div id="hintCostBox" class="mini-display">-</div>
-            </div>
-
-            <div class="setup-box">
-              <label>DROP Now</label>
-              <div id="dropPayoutBox" class="mini-display">-</div>
-            </div>
+          <div class="card stat-card">
+            <span class="label">Games</span>
+            <span id="gamesValue" class="value">0</span>
           </div>
+          <div class="card stat-card">
+            <span class="label">Wins</span>
+            <span id="winsValue" class="value">0</span>
+          </div>
+          <div class="card stat-card">
+            <span class="label">Losses</span>
+            <span id="lossesValue" class="value">0</span>
+          </div>
+          <div class="card stat-card">
+            <span class="label">Winrate</span>
+            <span id="winrateValue" class="value">0%</span>
+          </div>
+        </div>
 
-          <div class="round-grid">
-            <div class="round-box">
-              <span class="round-label">Your Value</span>
-              <div id="playerValue" class="big-value">-</div>
-              <div id="streakBadge" class="pill">No active streak</div>
-            </div>
+        <div class="grid-main">
+          <section class="card">
+            <h2>Game</h2>
 
-            <div class="round-box">
-              <span class="round-label">Round Info</span>
-              <div id="potValue" class="big-value small">-</div>
-              <div class="meta-row">
-                <span id="multiplierText">Multiplier: -</span>
-                <span id="riskText">Risks: 0/5</span>
+            <div class="form-row">
+              <div>
+                <label for="betInput">Bet</label>
+                <input id="betInput" type="number" min="1" value="100" />
               </div>
-              <div class="risk-track">
-                <div id="riskFill" class="risk-fill"></div>
+
+              <div>
+                <label for="modeSelect">Mode</label>
+                <select id="modeSelect">
+                  <option value="easy">Easy</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="hard">Hard</option>
+                </select>
               </div>
             </div>
-          </div>
 
-          <div class="hint-card">
-            <strong>Hint:</strong>
-            <span id="hintText">-</span>
-          </div>
+            <div class="game-box">
+              <p><strong>Dein Wert:</strong> <span id="playerRollValue">-</span></p>
+              <p><strong>Shadow:</strong> <span id="shadowRevealValue">?</span></p>
+              <p><strong>Risks:</strong> <span id="riskCountValue">0</span></p>
+              <p><strong>Potenzial:</strong> <span id="potentialValue">-</span></p>
+            </div>
 
-          <div id="statusBox" class="status-box info">
-            Press "New Round" to start.
-          </div>
+            <div class="button-row">
+              <button id="startBtn" class="btn btn-gold">Neue Runde</button>
+              <button id="riskBtn" class="btn btn-danger" disabled>Risk</button>
+              <button id="safeBtn" class="btn btn-success" disabled>Safe</button>
+            </div>
 
-          <div class="actions">
-            <button id="startBtn" class="btn btn-gold">New Round</button>
-            <button id="safeBtn" class="btn btn-green" disabled>SAFE</button>
-            <button id="riskBtn" class="btn btn-red" disabled>RISK</button>
-            <button id="hintBtn" class="btn btn-blue" disabled>HINT</button>
-            <button id="dropBtn" class="btn btn-purple" disabled>DROP</button>
-          </div>
-        </section>
-      </div>
+            <div id="gameMessage" class="message info">Starte eine neue Runde.</div>
+          </section>
 
-      <div class="bottom-grid">
-        <section class="card">
-          <h2>Last Round</h2>
-          <pre id="summaryBox" class="summary-box">No round played yet.</pre>
-        </section>
-
-        <section id="adminSection" class="card hidden">
-          <h2>Admin Panel</h2>
-          <input id="giftUsername" type="text" placeholder="Ziel-Username" />
-          <input id="giftAmount" type="number" min="1" placeholder="Coins" />
-          <input id="giftMessage" type="text" placeholder="Nachricht (optional)" />
-          <button id="giftBtn" class="btn btn-primary">Coins senden</button>
-        </section>
-      </div>
-    </section>
-  </div>
-
-  <div id="revealOverlay" class="reveal-overlay hidden">
-    <div class="reveal-card">
-      <div class="reveal-title">Revealing Shadow...</div>
-      <div id="revealCountdown" class="reveal-countdown">3</div>
-      <div id="shadowNumber" class="shadow-number hidden">-</div>
-      <div id="shadowFlavor" class="shadow-flavor hidden"></div>
-    </div>
+          <section class="card">
+            <h2>Letzte Runde</h2>
+            <pre id="summaryBox" class="summary">Noch keine Runde gespielt.</pre>
+          </section>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=30"></script>
 </body>
 </html>
