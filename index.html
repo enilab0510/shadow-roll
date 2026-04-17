@@ -3,118 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow Roll</title>
+  <title>Supabase Auth Test</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page">
-    <header class="header">
-      <div>
-        <h1>🎲 Shadow Roll</h1>
-        <p class="subtitle">Supabase Login + einfaches Risk Game</p>
+  <main class="page">
+    <section class="card">
+      <h1>Supabase Auth Test</h1>
+      <p class="muted">Nur Registrierung / Login / Logout zum Testen.</p>
+
+      <div class="tabs">
+        <button id="showLoginBtn" class="tab active">Login</button>
+        <button id="showRegisterBtn" class="tab">Registrieren</button>
       </div>
-      <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
-    </header>
 
-    <main class="layout">
-      <section id="authCard" class="card auth-card">
-        <div class="tabs">
-          <button id="tabLogin" class="tab active">Login</button>
-          <button id="tabRegister" class="tab">Registrieren</button>
-        </div>
+      <div id="loginBox">
+        <input id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+        <input id="loginPassword" type="password" placeholder="Passwort" autocomplete="current-password" />
+        <button id="loginBtn" class="btn btn-primary">Einloggen</button>
+      </div>
 
-        <div id="loginPane">
-          <h2>Einloggen</h2>
-          <input id="loginEmail" type="email" placeholder="E-Mail" autocomplete="email" />
-          <input id="loginPassword" type="password" placeholder="Passwort" autocomplete="current-password" />
-          <button id="loginBtn" class="btn btn-primary">Login</button>
-        </div>
+      <div id="registerBox" class="hidden">
+        <input id="registerUsername" type="text" placeholder="Username" autocomplete="username" />
+        <input id="registerEmail" type="email" placeholder="E-Mail" autocomplete="email" />
+        <input id="registerPassword" type="password" placeholder="Passwort" autocomplete="new-password" />
+        <button id="registerBtn" class="btn btn-primary">Registrieren</button>
+      </div>
 
-        <div id="registerPane" class="hidden">
-          <h2>Registrieren</h2>
-          <input id="registerUsername" type="text" placeholder="Username" autocomplete="username" />
-          <input id="registerEmail" type="email" placeholder="E-Mail" autocomplete="email" />
-          <input id="registerPassword" type="password" placeholder="Passwort" autocomplete="new-password" />
-          <button id="registerBtn" class="btn btn-primary">Account erstellen</button>
-        </div>
+      <div id="messageBox" class="message info">Bereit.</div>
+    </section>
 
-        <div id="authMessage" class="message info">Bitte einloggen oder registrieren.</div>
-      </section>
+    <section id="profileCard" class="card hidden">
+      <h2>Eingeloggt</h2>
+      <p><strong>User ID:</strong> <span id="userIdValue">-</span></p>
+      <p><strong>E-Mail:</strong> <span id="emailValue">-</span></p>
+      <p><strong>Username:</strong> <span id="usernameValue">-</span></p>
+      <p><strong>Coins:</strong> <span id="coinsValue">-</span></p>
 
-      <section id="appCard" class="hidden">
-        <div class="grid-top">
-          <div class="card stat-card">
-            <span class="label">Username</span>
-            <span id="usernameValue" class="value">-</span>
-          </div>
-          <div class="card stat-card">
-            <span class="label">Coins</span>
-            <span id="coinsValue" class="value">0</span>
-          </div>
-          <div class="card stat-card">
-            <span class="label">Games</span>
-            <span id="gamesValue" class="value">0</span>
-          </div>
-          <div class="card stat-card">
-            <span class="label">Wins</span>
-            <span id="winsValue" class="value">0</span>
-          </div>
-          <div class="card stat-card">
-            <span class="label">Losses</span>
-            <span id="lossesValue" class="value">0</span>
-          </div>
-          <div class="card stat-card">
-            <span class="label">Winrate</span>
-            <span id="winrateValue" class="value">0%</span>
-          </div>
-        </div>
-
-        <div class="grid-main">
-          <section class="card">
-            <h2>Game</h2>
-
-            <div class="form-row">
-              <div>
-                <label for="betInput">Bet</label>
-                <input id="betInput" type="number" min="1" value="100" />
-              </div>
-
-              <div>
-                <label for="modeSelect">Mode</label>
-                <select id="modeSelect">
-                  <option value="easy">Easy</option>
-                  <option value="normal" selected>Normal</option>
-                  <option value="hard">Hard</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="game-box">
-              <p><strong>Dein Wert:</strong> <span id="playerRollValue">-</span></p>
-              <p><strong>Shadow:</strong> <span id="shadowRevealValue">?</span></p>
-              <p><strong>Risks:</strong> <span id="riskCountValue">0</span></p>
-              <p><strong>Potenzial:</strong> <span id="potentialValue">-</span></p>
-            </div>
-
-            <div class="button-row">
-              <button id="startBtn" class="btn btn-gold">Neue Runde</button>
-              <button id="riskBtn" class="btn btn-danger" disabled>Risk</button>
-              <button id="safeBtn" class="btn btn-success" disabled>Safe</button>
-            </div>
-
-            <div id="gameMessage" class="message info">Starte eine neue Runde.</div>
-          </section>
-
-          <section class="card">
-            <h2>Letzte Runde</h2>
-            <pre id="summaryBox" class="summary">Noch keine Runde gespielt.</pre>
-          </section>
-        </div>
-      </section>
-    </main>
-  </div>
+      <button id="logoutBtn" class="btn btn-danger">Logout</button>
+    </section>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=30"></script>
+  <script src="app.js?v=40"></script>
 </body>
 </html>
