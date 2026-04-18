@@ -3,7 +3,7 @@ const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 const STARTING_COINS = 20000;
 const MAX_RISKS = 5;
 const HINT_MAX_RISKS = 3;
-const HINT_ALLOWED_UNTIL_RISK = 2; // Hint nur bei 0,1,2 Risks erlaubt
+const HINT_ALLOWED_UNTIL_RISK = 2;
 
 const MODE = {
   name: "Mittel",
@@ -68,6 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameMessage = $("gameMessage");
   const summaryBox = $("summaryBox");
 
+  const giftUsername = $("giftUsername");
+  const giftAmount = $("giftAmount");
+  const giftMessage = $("giftMessage");
+  const giftBtn = $("giftBtn");
+  const adminMessage = $("adminMessage");
+
   const startBtn = $("startBtn");
   const riskBtn = $("riskBtn");
   const hintBtn = $("hintBtn");
@@ -91,6 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
     hintCostPaid: 0,
   };
 
+  function setAdminMessage(text, type = "info") {
+    adminMessage.textContent = text;
+    adminMessage.className = `message ${type}`;
+  }
+
   function beep(freq = 440, duration = 80, type = "sine", gain = 0.03) {
     if (!audioCtx) return;
     if (audioCtx.state === "suspended") {
@@ -99,43 +110,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const osc = audioCtx.createOscillator();
     const amp = audioCtx.createGain();
-
     osc.type = type;
     osc.frequency.value = freq;
     amp.gain.value = gain;
-
     osc.connect(amp);
     amp.connect(audioCtx.destination);
-
     osc.start();
     osc.stop(audioCtx.currentTime + duration / 1000);
   }
 
-  function soundStart() {
-    beep(650, 70);
-  }
-
-  function soundTick() {
-    beep(880, 30);
-  }
-
-  function soundHint() {
-    beep(760, 90);
-  }
-
-  function soundDrop() {
-    beep(520, 80);
-    setTimeout(() => beep(660, 80), 90);
-  }
-
-  function soundWin() {
-    beep(900, 100);
-    setTimeout(() => beep(1120, 120), 120);
-  }
-
-  function soundLose() {
-    beep(300, 180, "sawtooth");
-  }
+  function soundStart() { beep(650, 70); }
+  function soundTick() { beep(880, 30); }
+  function soundHint() { beep(760, 90); }
+  function soundDrop() { beep(520, 80); setTimeout(() => beep(660, 80), 90); }
+  function soundWin() { beep(900, 100); setTimeout(() => beep(1120, 120), 120); }
+  function soundLose() { beep(300, 180, "sawtooth"); }
 
   function setAuthMessage(text, type = "info") {
     authMessage.textContent = text;
@@ -166,14 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getMultiplier(riskCount) {
-    const table = {
-      0: 1.03,
-      1: 1.16,
-      2: 1.4,
-      3: 1.78,
-      4: 2.4,
-      5: 3.2,
-    };
+    const table = { 0: 1.03, 1: 1.16, 2: 1.4, 3: 1.78, 4: 2.4, 5: 3.2 };
     return table[riskCount] || 3.2;
   }
 
@@ -248,15 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateHint(shadow) {
     const roll = rand(1, 3);
-
-    if (roll === 1) {
-      return [`Shadow is ${shadow % 2 === 0 ? "even" : "odd"}.`, 0.28];
-    }
-
-    if (roll === 2) {
-      return [`Shadow is ${shadow <= 50 ? "50 or below" : "above 50"}.`, 0.42];
-    }
-
+    if (roll === 1) return [`Shadow is ${shadow % 2 === 0 ? "even" : "odd"}.`, 0.28];
+    if (roll === 2) return [`Shadow is ${shadow <= 50 ? "50 or below" : "above 50"}.`, 0.42];
     if (shadow <= 33) return ["Shadow is likely low (1-33).", 0.56];
     if (shadow <= 66) return ["Shadow is in the middle range (34-66).", 0.48];
     return ["Shadow is likely high (67-100).", 0.56];
@@ -277,8 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
     recordValue.textContent = profile.record ?? 0;
     totalProfitValue.textContent = profile.total_profit ?? 0;
 
-    const rate =
-      profile.games > 0 ? ((profile.wins / profile.games) * 100).toFixed(1) : "0.0";
+    const rate = profile.games > 0 ? ((profile.wins / profile.games) * 100).toFixed(1) : "0.0";
     winrateValue.textContent = `${rate}%`;
   }
 
@@ -391,7 +365,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .single();
 
     if (error) throw error;
-
     profile = data;
     refreshProfileUI();
   }
@@ -403,6 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.classList.remove("hidden");
     resetRound();
     setGameMessage("Willkommen. Starte eine neue Runde.", "info");
+    setAdminMessage("Bereit.", "info");
   }
 
   function leaveApp() {
@@ -497,10 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (error) throw error;
 
       if (data.user && !data.session) {
-        const loginResult = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const loginResult = await supabase.auth.signInWithPassword({ email, password });
         if (loginResult.error) throw loginResult.error;
       }
 
@@ -521,11 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
       await enterApp();
@@ -543,6 +510,36 @@ document.addEventListener("DOMContentLoaded", () => {
       setAuthMessage("Erfolgreich ausgeloggt.", "success");
     } catch (err) {
       setAuthMessage(`Logout Fehler: ${err.message}`, "error");
+    }
+  });
+
+  giftBtn.addEventListener("click", async () => {
+    try {
+      const username = giftUsername.value.trim();
+      const amount = parseInt(giftAmount.value, 10);
+      const message = giftMessage.value.trim();
+
+      if (!username || !amount || amount < 1) {
+        setAdminMessage("Bitte Username und gültige Coin-Anzahl eingeben.", "error");
+        return;
+      }
+
+      setAdminMessage("Gift wird gesendet...", "info");
+
+      const { error } = await supabase.rpc("admin_gift_coins", {
+        target_username: username,
+        gift_amount: amount,
+        gift_message: message || null,
+      });
+
+      if (error) throw error;
+
+      setAdminMessage(`Erfolg: ${amount} Coins an ${username} gesendet.`, "success");
+      giftUsername.value = "";
+      giftAmount.value = "1000";
+      giftMessage.value = "";
+    } catch (err) {
+      setAdminMessage(`Gift Fehler: ${err.message}`, "error");
     }
   });
 
