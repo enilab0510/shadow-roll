@@ -1,25 +1,23 @@
 const SUPABASE_URL = "https://livqhbwvdxafhrbltnxn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 const STARTING_COINS = 20000;
+const MAX_RISKS = 5;
 
 const MODES = {
   Easy: {
     desc: "Softer losses, smaller wins.",
     rewardBoost: 0.9,
     lossProtection: 3,
-    payoutStep: 0.22,
   },
   Normal: {
     desc: "Balanced standard mode.",
     rewardBoost: 0.95,
     lossProtection: 0,
-    payoutStep: 0.3,
   },
   Hardcore: {
     desc: "Harder, riskier, more pressure.",
     rewardBoost: 1.0,
     lossProtection: 0,
-    payoutStep: 0.38,
   },
 };
 
@@ -80,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     playerRoll: 0,
     shadowRoll: 0,
     riskCount: 0,
+    startValue: 0,
   };
 
   function setAuthMessage(text, type = "info") {
@@ -116,15 +115,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return MODES[currentMode];
   }
 
-  function getCurrentMultiplier() {
-    if (!round.active) return 0;
-    return 1 + round.riskCount * getMode().payoutStep;
+  function getMultiplier(riskCount) {
+    const table = {
+      0: 1.03,
+      1: 1.16,
+      2: 1.4,
+      3: 1.78,
+      4: 2.4,
+      5: 3.2,
+    };
+    return table[riskCount] || 3.2;
   }
 
-  function getPotentialPayout() {
+  function safeBonus() {
+    const table = [1.03, 1.06, 1.1, 1.16, 1.24, 1.34];
+    return table[round.riskCount] || 1.34;
+  }
+
+  function currentMultiplier() {
+    return getMultiplier(round.riskCount) * getMode().rewardBoost;
+  }
+
+  function safePayout() {
     if (!round.active) return 0;
-    const raw = round.bet * getCurrentMultiplier() * getMode().rewardBoost;
-    return Math.max(1, Math.round(raw));
+    return Math.max(
+      1,
+      Math.round(round.bet * currentMultiplier() * safeBonus())
+    );
   }
 
   function refreshProfileUI() {
@@ -145,18 +162,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function refreshGameUI() {
     modeDesc.textContent = getMode().desc;
     potValue.textContent = round.active ? String(round.bet) : "-";
-    riskCountValue.textContent = round.active ? `${round.riskCount}/5` : "0/5";
+    riskCountValue.textContent = round.active
+      ? `${round.riskCount}/${MAX_RISKS}`
+      : `0/${MAX_RISKS}`;
     playerValue.textContent = round.active ? String(round.playerRoll) : "-";
     shadowValue.textContent = round.active ? "?" : "?";
+
     multiplierValue.textContent = round.active
-      ? `Multiplier: x${getCurrentMultiplier().toFixed(2)}`
+      ? `Multiplier: x${currentMultiplier().toFixed(2)}`
       : "Multiplier: -";
+
     payoutValue.textContent = round.active
-      ? `SAFE Payout: ${getPotentialPayout()}`
+      ? `SAFE Payout: ${safePayout()}`
       : "SAFE Payout: -";
 
     startBtn.disabled = round.active;
-    riskBtn.disabled = !round.active || round.riskCount >= 5;
+    riskBtn.disabled = !round.active || round.riskCount >= MAX_RISKS;
     safeBtn.disabled = !round.active;
   }
 
@@ -167,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playerRoll: 0,
       shadowRoll: 0,
       riskCount: 0,
+      startValue: 0,
     };
     refreshGameUI();
   }
@@ -215,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appCard.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
     resetRound();
-    setGameMessage("Willkommen. Starte eine neue Runde.", "info");
+    setGameMessage('Willkommen. Starte eine neue Runde.', "info");
   }
 
   function leaveApp() {
@@ -355,11 +377,14 @@ document.addEventListener("DOMContentLoaded", () => {
         coins: profile.coins - bet,
       });
 
+      const firstRoll = rand(1, 100);
+
       round.active = true;
       round.bet = bet;
-      round.playerRoll = rand(1, 100);
+      round.playerRoll = firstRoll;
       round.shadowRoll = rand(1, 100);
       round.riskCount = 0;
+      round.startValue = firstRoll;
 
       refreshGameUI();
       setGameMessage(`Runde gestartet. Dein Startwert ist ${round.playerRoll}.`, "info");
@@ -369,25 +394,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // WICHTIG: Risk ist jetzt kompletter Neuwurf 1-100, wie im Python-Script
+  // Risk = kompletter Neuwurf 1-100, wie im Python-Script
   riskBtn.addEventListener("click", () => {
     if (!round.active) return;
-    if (round.riskCount >= 5) return;
+    if (round.riskCount >= MAX_RISKS) return;
 
-    const old = round.playerRoll;
-    const next = rand(1, 100);
+    const oldValue = round.playerRoll;
+    const newValue = rand(1, 100);
 
-    round.playerRoll = next;
+    round.playerRoll = newValue;
     round.riskCount += 1;
 
     refreshGameUI();
 
-    if (next > old) {
-      setGameMessage(`Risk war gut. ${old} → ${next}`, "success");
-    } else if (next < old) {
-      setGameMessage(`Risk war schlecht. ${old} → ${next}`, "error");
+    if (newValue > oldValue) {
+      setGameMessage(`Nice roll! ${oldValue} → ${newValue}`, "success");
+    } else if (newValue < oldValue) {
+      setGameMessage(`Bad roll... ${oldValue} → ${newValue}`, "error");
     } else {
-      setGameMessage(`Kein Unterschied. Wert bleibt ${next}`, "info");
+      setGameMessage(`No change. Wert bleibt ${newValue}`, "info");
     }
   });
 
@@ -401,27 +426,31 @@ document.addEventListener("DOMContentLoaded", () => {
       shadowValue.textContent = String(round.shadowRoll);
 
       if (won) {
-        const payout = getPotentialPayout();
+        const payout = safePayout();
+        const profit = payout - round.bet;
         const newCoins = profile.coins + payout;
         const newWins = (profile.wins || 0) + 1;
+        const newRecord = Math.max(profile.record || STARTING_COINS, newCoins);
 
         await updateProfile({
           coins: newCoins,
           games: newGames,
           wins: newWins,
-          record: Math.max(profile.record || STARTING_COINS, newCoins),
+          record: newRecord,
         });
 
         summaryBox.textContent =
           `Mode: ${currentMode}\n` +
           `Bet: ${round.bet}\n` +
-          `Your Value: ${round.playerRoll}\n` +
+          `Start Value: ${round.startValue}\n` +
+          `Final Value: ${round.playerRoll}\n` +
           `Shadow: ${round.shadowRoll}\n` +
           `Risks: ${round.riskCount}\n` +
           `Result: WIN\n` +
-          `Payout: ${payout}`;
+          `Payout: ${payout}\n` +
+          `Profit: +${profit}`;
 
-        setGameMessage(`Gewonnen. Shadow war ${round.shadowRoll}.`, "success");
+        setGameMessage(`Gewonnen. Shadow war ${round.shadowRoll}. Payout ${payout}`, "success");
       } else {
         const refund = getMode().lossProtection || 0;
         const newLosses = (profile.losses || 0) + 1;
@@ -436,7 +465,8 @@ document.addEventListener("DOMContentLoaded", () => {
         summaryBox.textContent =
           `Mode: ${currentMode}\n` +
           `Bet: ${round.bet}\n` +
-          `Your Value: ${round.playerRoll}\n` +
+          `Start Value: ${round.startValue}\n` +
+          `Final Value: ${round.playerRoll}\n` +
           `Shadow: ${round.shadowRoll}\n` +
           `Risks: ${round.riskCount}\n` +
           `Result: LOSS${refund ? `\nRefund: ${refund}` : ""}`;
