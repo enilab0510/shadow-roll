@@ -3,22 +3,11 @@ const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 const STARTING_COINS = 20000;
 const MAX_RISKS = 5;
 
-const MODES = {
-  Easy: {
-    desc: "Softer losses, smaller wins.",
-    rewardBoost: 0.9,
-    lossProtection: 3,
-  },
-  Normal: {
-    desc: "Balanced standard mode.",
-    rewardBoost: 0.95,
-    lossProtection: 0,
-  },
-  Hardcore: {
-    desc: "Harder, riskier, more pressure.",
-    rewardBoost: 1.0,
-    lossProtection: 0,
-  },
+const MODE = {
+  name: "Mittel",
+  desc: "Balanced standard mode.",
+  rewardBoost: 0.95,
+  lossProtection: 0,
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -67,10 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const safeBtn = $("safeBtn");
 
   const modeButtons = [...document.querySelectorAll(".mode-btn")];
+  const modeRow = document.querySelector(".mode-row");
 
   let currentUser = null;
   let profile = null;
-  let currentMode = "Normal";
 
   let round = {
     active: false,
@@ -111,10 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  function getMode() {
-    return MODES[currentMode];
-  }
-
   function getMultiplier(riskCount) {
     const table = {
       0: 1.03,
@@ -133,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function currentMultiplier() {
-    return getMultiplier(round.riskCount) * getMode().rewardBoost;
+    return getMultiplier(round.riskCount) * MODE.rewardBoost;
   }
 
   function safePayout() {
@@ -160,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function refreshGameUI() {
-    modeDesc.textContent = getMode().desc;
+    modeDesc.textContent = `${MODE.desc} Difficulty: ${MODE.name}.`;
     potValue.textContent = round.active ? String(round.bet) : "-";
     riskCountValue.textContent = round.active
       ? `${round.riskCount}/${MAX_RISKS}`
@@ -237,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appCard.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
     resetRound();
-    setGameMessage('Willkommen. Starte eine neue Runde.', "info");
+    setGameMessage("Willkommen. Starte eine neue Runde.", "info");
   }
 
   function leaveApp() {
@@ -248,6 +233,15 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.classList.add("hidden");
     showLogin();
     resetRound();
+  }
+
+  function hideModeControls() {
+    if (modeRow) {
+      modeRow.style.display = "none";
+    }
+    modeButtons.forEach((btn) => {
+      btn.style.display = "none";
+    });
   }
 
   showLoginBtn.addEventListener("click", showLogin);
@@ -347,16 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  modeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (round.active) return;
-      currentMode = btn.dataset.mode;
-      modeButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      refreshGameUI();
-    });
-  });
-
   startBtn.addEventListener("click", async () => {
     try {
       if (!profile) return;
@@ -394,7 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Risk = kompletter Neuwurf 1-100, wie im Python-Script
   riskBtn.addEventListener("click", () => {
     if (!round.active) return;
     if (round.riskCount >= MAX_RISKS) return;
@@ -440,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         summaryBox.textContent =
-          `Mode: ${currentMode}\n` +
+          `Difficulty: ${MODE.name}\n` +
           `Bet: ${round.bet}\n` +
           `Start Value: ${round.startValue}\n` +
           `Final Value: ${round.playerRoll}\n` +
@@ -452,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setGameMessage(`Gewonnen. Shadow war ${round.shadowRoll}. Payout ${payout}`, "success");
       } else {
-        const refund = getMode().lossProtection || 0;
+        const refund = MODE.lossProtection || 0;
         const newLosses = (profile.losses || 0) + 1;
         const newCoins = profile.coins + refund;
 
@@ -463,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         summaryBox.textContent =
-          `Mode: ${currentMode}\n` +
+          `Difficulty: ${MODE.name}\n` +
           `Bet: ${round.bet}\n` +
           `Start Value: ${round.startValue}\n` +
           `Final Value: ${round.playerRoll}\n` +
@@ -486,6 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   (async function init() {
     try {
+      hideModeControls();
       showLogin();
       resetRound();
 
