@@ -92,7 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function beep(freq = 440, duration = 80, type = "sine", gain = 0.03) {
     if (!audioCtx) return;
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
 
     const osc = audioCtx.createOscillator();
     const amp = audioCtx.createGain();
@@ -105,12 +107,31 @@ document.addEventListener("DOMContentLoaded", () => {
     osc.stop(audioCtx.currentTime + duration / 1000);
   }
 
-  function soundStart() { beep(650, 70); }
-  function soundTick() { beep(880, 30); }
-  function soundHint() { beep(760, 90); }
-  function soundDrop() { beep(520, 80); setTimeout(() => beep(660, 80), 90); }
-  function soundWin() { beep(900, 100); setTimeout(() => beep(1120, 120), 120); }
-  function soundLose() { beep(300, 180, "sawtooth"); }
+  function soundStart() {
+    beep(650, 70);
+  }
+
+  function soundTick() {
+    beep(880, 30);
+  }
+
+  function soundHint() {
+    beep(760, 90);
+  }
+
+  function soundDrop() {
+    beep(520, 80);
+    setTimeout(() => beep(660, 80), 90);
+  }
+
+  function soundWin() {
+    beep(900, 100);
+    setTimeout(() => beep(1120, 120), 120);
+  }
+
+  function soundLose() {
+    beep(300, 180, "sawtooth");
+  }
 
   function setAuthMessage(text, type = "info") {
     authMessage.textContent = text;
@@ -141,7 +162,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getMultiplier(riskCount) {
-    const table = { 0: 1.03, 1: 1.16, 2: 1.4, 3: 1.78, 4: 2.4, 5: 3.2 };
+    const table = {
+      0: 1.03,
+      1: 1.16,
+      2: 1.4,
+      3: 1.78,
+      4: 2.4,
+      5: 3.2,
+    };
     return table[riskCount] || 3.2;
   }
 
@@ -173,7 +201,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function hintCost() {
     let base = Math.max(
       12,
-      Math.floor(round.bet * (getMultiplier(round.riskCount) * MODE.rewardBoost) * 0.32 + round.riskCount * 8)
+      Math.floor(
+        round.bet * (getMultiplier(round.riskCount) * MODE.rewardBoost) * 0.32 +
+          round.riskCount * 8
+      )
     );
 
     if (round.riskCount >= 4) base += 20;
@@ -184,6 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function dropRatio() {
     if (!round.active) return 0;
+
     let ratio = MODE.dropBase + round.riskCount * 0.055;
 
     if (round.riskCount === 0) ratio -= 0.05;
@@ -205,8 +237,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateHint(shadow) {
     const roll = rand(1, 3);
-    if (roll === 1) return [`Shadow is ${shadow % 2 === 0 ? "even" : "odd"}.`, 0.28];
-    if (roll === 2) return [`Shadow is ${shadow <= 50 ? "50 or below" : "above 50"}.`, 0.42];
+    if (roll === 1) {
+      return [`Shadow is ${shadow % 2 === 0 ? "even" : "odd"}.`, 0.28];
+    }
+    if (roll === 2) {
+      return [`Shadow is ${shadow <= 50 ? "50 or below" : "above 50"}.`, 0.42];
+    }
     if (shadow <= 33) return ["Shadow is likely low (1-33).", 0.56];
     if (shadow <= 66) return ["Shadow is in the middle range (34-66).", 0.48];
     return ["Shadow is likely high (67-100).", 0.56];
@@ -227,23 +263,33 @@ document.addEventListener("DOMContentLoaded", () => {
     recordValue.textContent = profile.record ?? 0;
     totalProfitValue.textContent = profile.total_profit ?? 0;
 
-    const rate = profile.games > 0 ? ((profile.wins / profile.games) * 100).toFixed(1) : "0.0";
+    const rate =
+      profile.games > 0 ? ((profile.wins / profile.games) * 100).toFixed(1) : "0.0";
     winrateValue.textContent = `${rate}%`;
   }
 
   function refreshGameUI() {
     modeDesc.textContent = `${MODE.desc} Difficulty: ${MODE.name}.`;
     potValue.textContent = round.active ? String(round.bet) : "-";
-    riskCountValue.textContent = round.active ? `${round.riskCount}/${currentMaxRisks()}` : `0/${MAX_RISKS}`;
+    riskCountValue.textContent = round.active
+      ? `${round.riskCount}/${currentMaxRisks()}`
+      : `0/${MAX_RISKS}`;
     hintCostValue.textContent = round.active && !round.hintUsed ? String(hintCost()) : "-";
     playerValue.textContent = round.active ? String(round.playerRoll) : "-";
-    multiplierValue.textContent = round.active ? `Multiplier: x${currentMultiplier().toFixed(2)}` : "Multiplier: -";
-    payoutValue.textContent = round.active ? `SAFE Payout: ${safePayout()}` : "SAFE Payout: -";
-    dropValue.textContent = round.active ? `DROP Payout: ${dropPayout()}` : "DROP Payout: -";
+    multiplierValue.textContent = round.active
+      ? `Multiplier: x${currentMultiplier().toFixed(2)}`
+      : "Multiplier: -";
+    payoutValue.textContent = round.active
+      ? `SAFE Payout: ${safePayout()}`
+      : "SAFE Payout: -";
+    dropValue.textContent = round.active
+      ? `DROP Payout: ${dropPayout()}`
+      : "DROP Payout: -";
     hintText.textContent = `Hint: ${round.hintText || "-"}`;
 
     startBtn.disabled = round.active || round.animating;
-    riskBtn.disabled = !round.active || round.animating || round.riskCount >= currentMaxRisks();
+    riskBtn.disabled =
+      !round.active || round.animating || round.riskCount >= currentMaxRisks();
     hintBtn.disabled = !round.active || round.animating || round.hintUsed;
     dropBtn.disabled = !round.active || round.animating;
     safeBtn.disabled = !round.active || round.animating;
@@ -279,14 +325,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentUser = user;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+    let profileData = null;
+    let profileError = null;
 
-    if (error) throw error;
-    if (!data) throw new Error("Kein Profil gefunden.");
+    for (let i = 0; i < 10; i++) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      profileData = data;
+      profileError = error;
+
+      if (profileError) throw profileError;
+      if (profileData) break;
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+
+    if (!profileData) {
+      throw new Error("Kein Profil gefunden. Bitte kurz warten und dann einloggen.");
+    }
 
     profile = {
       wins: 0,
@@ -296,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hints: 0,
       drops: 0,
       total_profit: 0,
-      ...data,
+      ...profileData,
     };
 
     refreshProfileUI();
@@ -311,6 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .single();
 
     if (error) throw error;
+
     profile = data;
     refreshProfileUI();
   }
@@ -358,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         round.animating = false;
         refreshGameUI();
-        done?.();
+        if (done) done();
       }
     };
 
@@ -437,7 +498,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
       if (error) throw error;
 
       await enterApp();
@@ -669,7 +734,10 @@ document.addEventListener("DOMContentLoaded", () => {
           `Hint Used: ${round.hintUsed ? "Yes" : "No"}\n` +
           `Result: LOSS${refund ? `\nRefund: ${refund}` : ""}`;
 
-        setGameMessage(`Verloren. Shadow war ${round.shadowRoll}.${refund ? ` Refund ${refund}.` : ""}`, "error");
+        setGameMessage(
+          `Verloren. Shadow war ${round.shadowRoll}.${refund ? ` Refund ${refund}.` : ""}`,
+          "error"
+        );
       }
 
       setTimeout(() => resetRound(), 700);
