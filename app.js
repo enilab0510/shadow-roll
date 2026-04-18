@@ -3,6 +3,7 @@ const SUPABASE_KEY = "sb_publishable_tz53K_v1PwnxAGC1QnZFOw_aeG-NaEE";
 const STARTING_COINS = 20000;
 const MAX_RISKS = 5;
 const HINT_MAX_RISKS = 3;
+const HINT_ALLOWED_UNTIL_RISK = 2; // Hint nur bei 0,1,2 Risks erlaubt
 
 const MODE = {
   name: "Mittel",
@@ -98,11 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const osc = audioCtx.createOscillator();
     const amp = audioCtx.createGain();
+
     osc.type = type;
     osc.frequency.value = freq;
     amp.gain.value = gain;
+
     osc.connect(amp);
     amp.connect(audioCtx.destination);
+
     osc.start();
     osc.stop(audioCtx.currentTime + duration / 1000);
   }
@@ -177,6 +181,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return round.hintUsed ? HINT_MAX_RISKS : MAX_RISKS;
   }
 
+  function canUseHintNow() {
+    return round.active &&
+      !round.animating &&
+      !round.hintUsed &&
+      round.riskCount <= HINT_ALLOWED_UNTIL_RISK;
+  }
+
   function safeBonus() {
     const table = [1.03, 1.06, 1.1, 1.16, 1.24, 1.34];
     let bonus = table[round.riskCount] || 1.34;
@@ -203,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
       12,
       Math.floor(
         round.bet * (getMultiplier(round.riskCount) * MODE.rewardBoost) * 0.32 +
-          round.riskCount * 8
+        round.riskCount * 8
       )
     );
 
@@ -237,12 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateHint(shadow) {
     const roll = rand(1, 3);
+
     if (roll === 1) {
       return [`Shadow is ${shadow % 2 === 0 ? "even" : "odd"}.`, 0.28];
     }
+
     if (roll === 2) {
       return [`Shadow is ${shadow <= 50 ? "50 or below" : "above 50"}.`, 0.42];
     }
+
     if (shadow <= 33) return ["Shadow is likely low (1-33).", 0.56];
     if (shadow <= 66) return ["Shadow is in the middle range (34-66).", 0.48];
     return ["Shadow is likely high (67-100).", 0.56];
@@ -274,7 +288,12 @@ document.addEventListener("DOMContentLoaded", () => {
     riskCountValue.textContent = round.active
       ? `${round.riskCount}/${currentMaxRisks()}`
       : `0/${MAX_RISKS}`;
-    hintCostValue.textContent = round.active && !round.hintUsed ? String(hintCost()) : "-";
+
+    hintCostValue.textContent =
+      round.active && !round.hintUsed && round.riskCount <= HINT_ALLOWED_UNTIL_RISK
+        ? String(hintCost())
+        : "-";
+
     playerValue.textContent = round.active ? String(round.playerRoll) : "-";
     multiplierValue.textContent = round.active
       ? `Multiplier: x${currentMultiplier().toFixed(2)}`
@@ -290,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.disabled = round.active || round.animating;
     riskBtn.disabled =
       !round.active || round.animating || round.riskCount >= currentMaxRisks();
-    hintBtn.disabled = !round.active || round.animating || round.hintUsed;
+    hintBtn.disabled = !canUseHintNow();
     dropBtn.disabled = !round.active || round.animating;
     safeBtn.disabled = !round.active || round.animating;
   }
@@ -309,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hintStrength: 0,
       hintCostPaid: 0,
     };
+
     shadowValue.textContent = "?";
     hintText.textContent = "Hint: -";
     refreshGameUI();
@@ -477,7 +497,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (error) throw error;
 
       if (data.user && !data.session) {
-        const loginResult = await supabase.auth.signInWithPassword({ email, password });
+        const loginResult = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (loginResult.error) throw loginResult.error;
       }
 
@@ -528,6 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!profile) return;
 
       const bet = parseInt(betInput.value, 10);
+
       if (!bet || bet < 1) {
         setGameMessage("Bet muss mindestens 1 sein.", "error");
         return;
@@ -595,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   hintBtn.addEventListener("click", async () => {
     try {
-      if (!round.active || round.animating || round.hintUsed) return;
+      if (!canUseHintNow()) return;
 
       const cost = hintCost();
       if (cost > profile.coins) {
@@ -617,7 +641,10 @@ document.addEventListener("DOMContentLoaded", () => {
         total_profit: (profile.total_profit || 0) - cost,
       });
 
-      setGameMessage(`Hint gekauft für ${cost} Coins. Max Risks jetzt ${HINT_MAX_RISKS}.`, "info");
+      setGameMessage(
+        `Hint gekauft für ${cost} Coins. Hint ist nur bis Risk 3 erlaubt. Max Risks jetzt ${HINT_MAX_RISKS}.`,
+        "info"
+      );
       refreshGameUI();
     } catch (err) {
       setGameMessage(`Hint Fehler: ${err.message}`, "error");
