@@ -126,6 +126,36 @@
         </section>
       </div>
 
+      <section class="card admin-card">
+        <div class="section-head">
+          <div>
+            <h2>Admin Panel</h2>
+            <p class="muted small">Coins an einen User senden.</p>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <div>
+            <label for="giftUsername">Username</label>
+            <input id="giftUsername" type="text" placeholder="z. B. enrico" />
+          </div>
+          <div>
+            <label for="giftAmount">Coins</label>
+            <input id="giftAmount" type="number" min="1" value="1000" />
+          </div>
+          <div>
+            <label for="giftMessage">Nachricht</label>
+            <input id="giftMessage" type="text" placeholder="optional" />
+          </div>
+        </div>
+
+        <div class="admin-actions">
+          <button id="giftBtn" class="btn btn-primary" type="button">Gift Coins</button>
+        </div>
+
+        <div id="adminMessage" class="message info">Bereit.</div>
+      </section>
+
       <div class="stats-grid bottom-stats">
         <div class="card stat-card">
           <span class="label">Wins</span>
@@ -164,6 +194,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=90"></script>
+  <script src="app.js?v=91"></script>
 </body>
 </html>
