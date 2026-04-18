@@ -41,7 +41,7 @@
     </section>
 
     <section id="appCard" class="hidden">
-      <div class="stats-grid">
+      <div class="stats-grid top-stats">
         <div class="card stat-card">
           <span class="label">Username</span>
           <span id="usernameValue" class="value">-</span>
@@ -65,17 +65,12 @@
           <div class="section-head">
             <div>
               <h2>Spiel</h2>
-              <p id="modeDesc" class="muted small">Balanced standard mode.</p>
+              <p id="modeDesc" class="muted small">Normale Schwierigkeit.</p>
             </div>
-
-            <div class="mode-row">
-              <button class="mode-btn" data-mode="Easy" type="button">Easy</button>
-              <button class="mode-btn active" data-mode="Normal" type="button">Normal</button>
-              <button class="mode-btn" data-mode="Hardcore" type="button">Hardcore</button>
-            </div>
+            <div class="difficulty-badge">Mittel</div>
           </div>
 
-          <div class="setup-grid compact-grid">
+          <div class="setup-grid">
             <div>
               <label for="betInput">Bet</label>
               <input id="betInput" type="number" min="1" value="100" />
@@ -88,30 +83,39 @@
               <label>Risks</label>
               <div id="riskCountValue" class="display-box">0/5</div>
             </div>
+            <div>
+              <label>Hint-Kosten</label>
+              <div id="hintCostValue" class="display-box">-</div>
+            </div>
           </div>
 
           <div class="round-grid">
             <div class="panel">
               <span class="panel-label">Your Value</span>
               <div id="playerValue" class="big-number">-</div>
+              <div id="hintText" class="hint-text">Hint: -</div>
             </div>
 
             <div class="panel">
               <span class="panel-label">Shadow</span>
               <div id="shadowValue" class="big-number">?</div>
+              <div class="hint-text">Shadow wird bei SAFE oder DROP aufgedeckt.</div>
             </div>
           </div>
 
           <div class="subinfo">
             <div id="multiplierValue">Multiplier: -</div>
             <div id="payoutValue">SAFE Payout: -</div>
+            <div id="dropValue">DROP Payout: -</div>
           </div>
 
           <div id="gameMessage" class="message info">Drücke auf „Neue Runde“.</div>
 
-          <div class="button-row">
+          <div class="button-row five">
             <button id="startBtn" class="btn btn-gold" type="button">Neue Runde</button>
             <button id="riskBtn" class="btn btn-danger" type="button" disabled>Risk</button>
+            <button id="hintBtn" class="btn btn-yellow" type="button" disabled>Hint</button>
+            <button id="dropBtn" class="btn btn-blue" type="button" disabled>Drop</button>
             <button id="safeBtn" class="btn btn-success" type="button" disabled>Safe</button>
           </div>
         </section>
@@ -121,10 +125,45 @@
           <pre id="summaryBox" class="summary-box">Noch keine Runde gespielt.</pre>
         </section>
       </div>
+
+      <div class="stats-grid bottom-stats">
+        <div class="card stat-card">
+          <span class="label">Wins</span>
+          <span id="winsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Losses</span>
+          <span id="lossesValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Streak</span>
+          <span id="streakValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Best Streak</span>
+          <span id="bestStreakValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Hints</span>
+          <span id="hintsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Drops</span>
+          <span id="dropsValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Record</span>
+          <span id="recordValue" class="value">0</span>
+        </div>
+        <div class="card stat-card">
+          <span class="label">Total Profit</span>
+          <span id="totalProfitValue" class="value">0</span>
+        </div>
+      </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=70"></script>
+  <script src="app.js?v=90"></script>
 </body>
 </html>
