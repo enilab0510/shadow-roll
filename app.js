@@ -15,7 +15,8 @@ const MODE = {
 
 document.addEventListener("DOMContentLoaded", () => {
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -91,6 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function beep(freq = 440, duration = 80, type = "sine", gain = 0.03) {
     if (!audioCtx) return;
+    if (audioCtx.state === "suspended") audioCtx.resume();
+
     const osc = audioCtx.createOscillator();
     const amp = audioCtx.createGain();
     osc.type = type;
@@ -347,7 +350,6 @@ document.addEventListener("DOMContentLoaded", () => {
       soundTick();
       element.classList.add("roll");
       element.textContent = String(values[i]);
-
       setTimeout(() => element.classList.remove("roll"), 70);
 
       if (i < values.length - 1) {
