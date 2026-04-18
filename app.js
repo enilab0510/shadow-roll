@@ -55,9 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const riskBtn = $("riskBtn");
   const safeBtn = $("safeBtn");
 
-  const modeButtons = [...document.querySelectorAll(".mode-btn")];
-  const modeRow = document.querySelector(".mode-row");
-
   let currentUser = null;
   let profile = null;
 
@@ -68,18 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
     shadowRoll: 0,
     riskCount: 0,
     startValue: 0,
+    animating: false,
   };
 
   function setAuthMessage(text, type = "info") {
     authMessage.textContent = text;
     authMessage.className = `message ${type}`;
-    console.log(`[AUTH] ${text}`);
   }
 
   function setGameMessage(text, type = "info") {
     gameMessage.textContent = text;
     gameMessage.className = `message ${type}`;
-    console.log(`[GAME] ${text}`);
   }
 
   function showLogin() {
@@ -151,19 +147,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ? `${round.riskCount}/${MAX_RISKS}`
       : `0/${MAX_RISKS}`;
     playerValue.textContent = round.active ? String(round.playerRoll) : "-";
-    shadowValue.textContent = round.active ? "?" : "?";
-
     multiplierValue.textContent = round.active
       ? `Multiplier: x${currentMultiplier().toFixed(2)}`
       : "Multiplier: -";
-
     payoutValue.textContent = round.active
       ? `SAFE Payout: ${safePayout()}`
       : "SAFE Payout: -";
 
-    startBtn.disabled = round.active;
-    riskBtn.disabled = !round.active || round.riskCount >= MAX_RISKS;
-    safeBtn.disabled = !round.active;
+    startBtn.disabled = round.active || round.animating;
+    riskBtn.disabled = !round.active || round.animating || round.riskCount >= MAX_RISKS;
+    safeBtn.disabled = !round.active || round.animating;
   }
 
   function resetRound() {
@@ -174,7 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
       shadowRoll: 0,
       riskCount: 0,
       startValue: 0,
+      animating: false,
     };
+    shadowValue.textContent = "?";
     refreshGameUI();
   }
 
@@ -235,13 +230,48 @@ document.addEventListener("DOMContentLoaded", () => {
     resetRound();
   }
 
-  function hideModeControls() {
-    if (modeRow) {
-      modeRow.style.display = "none";
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function animateNumber(element, finalValue, done) {
+    const values = Array.from({ length: 12 }, () => rand(1, 100));
+    values.push(finalValue);
+    let i = 0;
+
+    round.animating = true;
+    refreshGameUI();
+
+    const run = () => {
+      element.textContent = String(values[i]);
+
+      if (i < values.length - 1) {
+        i += 1;
+        setTimeout(run, 45 + i * 4);
+      } else {
+        round.animating = false;
+        refreshGameUI();
+        done?.();
+      }
+    };
+
+    run();
+  }
+
+  async function revealShadowAnimated(finalShadow) {
+    shadowValue.textContent = "?";
+    round.animating = true;
+    refreshGameUI();
+
+    const fakeValues = ["3", "2", "1"];
+    for (const v of fakeValues) {
+      shadowValue.textContent = v;
+      await wait(350);
     }
-    modeButtons.forEach((btn) => {
-      btn.style.display = "none";
-    });
+
+    shadowValue.textContent = String(finalShadow);
+    round.animating = false;
+    refreshGameUI();
   }
 
   showLoginBtn.addEventListener("click", showLogin);
@@ -273,8 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
           emailRedirectTo: window.location.origin,
         },
       });
-
-      console.log("SIGNUP RESULT:", data, error);
 
       if (error) throw error;
 
@@ -365,13 +393,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       round.active = true;
       round.bet = bet;
-      round.playerRoll = firstRoll;
+      round.playerRoll = 0;
       round.shadowRoll = rand(1, 100);
       round.riskCount = 0;
       round.startValue = firstRoll;
+      shadowValue.textContent = "?";
 
       refreshGameUI();
-      setGameMessage(`Runde gestartet. Dein Startwert ist ${round.playerRoll}.`, "info");
+      setGameMessage("Runde gestartet. Startwert wird gewürfelt...", "info");
+
+      animateNumber(playerValue, firstRoll, () => {
+        round.playerRoll = firstRoll;
+        refreshGameUI();
+        setGameMessage(`Runde gestartet. Dein Startwert ist ${round.playerRoll}.`, "info");
+      });
     } catch (err) {
       console.error("START ERROR:", err);
       setGameMessage(`Start Fehler: ${err.message}`, "error");
@@ -379,34 +414,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   riskBtn.addEventListener("click", () => {
-    if (!round.active) return;
+    if (!round.active || round.animating) return;
     if (round.riskCount >= MAX_RISKS) return;
 
     const oldValue = round.playerRoll;
     const newValue = rand(1, 100);
 
-    round.playerRoll = newValue;
     round.riskCount += 1;
-
+    round.playerRoll = 0;
     refreshGameUI();
+    setGameMessage("Risking it...", "info");
 
-    if (newValue > oldValue) {
-      setGameMessage(`Nice roll! ${oldValue} → ${newValue}`, "success");
-    } else if (newValue < oldValue) {
-      setGameMessage(`Bad roll... ${oldValue} → ${newValue}`, "error");
-    } else {
-      setGameMessage(`No change. Wert bleibt ${newValue}`, "info");
-    }
+    animateNumber(playerValue, newValue, () => {
+      round.playerRoll = newValue;
+      refreshGameUI();
+
+      if (newValue > oldValue) {
+        setGameMessage(`Nice roll! ${oldValue} → ${newValue}`, "success");
+      } else if (newValue < oldValue) {
+        setGameMessage(`Bad roll... ${oldValue} → ${newValue}`, "error");
+      } else {
+        setGameMessage(`No change. Wert bleibt ${newValue}`, "info");
+      }
+    });
   });
 
   safeBtn.addEventListener("click", async () => {
     try {
-      if (!round.active) return;
+      if (!round.active || round.animating) return;
 
-      const won = round.playerRoll > round.shadowRoll;
+      const finalShadow = round.shadowRoll;
+      await revealShadowAnimated(finalShadow);
+
+      const won = round.playerRoll > finalShadow;
       const newGames = (profile.games || 0) + 1;
-
-      shadowValue.textContent = String(round.shadowRoll);
 
       if (won) {
         const payout = safePayout();
@@ -427,13 +468,13 @@ document.addEventListener("DOMContentLoaded", () => {
           `Bet: ${round.bet}\n` +
           `Start Value: ${round.startValue}\n` +
           `Final Value: ${round.playerRoll}\n` +
-          `Shadow: ${round.shadowRoll}\n` +
+          `Shadow: ${finalShadow}\n` +
           `Risks: ${round.riskCount}\n` +
           `Result: WIN\n` +
           `Payout: ${payout}\n` +
           `Profit: +${profit}`;
 
-        setGameMessage(`Gewonnen. Shadow war ${round.shadowRoll}. Payout ${payout}`, "success");
+        setGameMessage(`Gewonnen. Shadow war ${finalShadow}. Payout ${payout}`, "success");
       } else {
         const refund = MODE.lossProtection || 0;
         const newLosses = (profile.losses || 0) + 1;
@@ -450,17 +491,19 @@ document.addEventListener("DOMContentLoaded", () => {
           `Bet: ${round.bet}\n` +
           `Start Value: ${round.startValue}\n` +
           `Final Value: ${round.playerRoll}\n` +
-          `Shadow: ${round.shadowRoll}\n` +
+          `Shadow: ${finalShadow}\n` +
           `Risks: ${round.riskCount}\n` +
           `Result: LOSS${refund ? `\nRefund: ${refund}` : ""}`;
 
         setGameMessage(
-          `Verloren. Shadow war ${round.shadowRoll}.${refund ? ` Refund ${refund}.` : ""}`,
+          `Verloren. Shadow war ${finalShadow}.${refund ? ` Refund ${refund}.` : ""}`,
           "error"
         );
       }
 
-      resetRound();
+      setTimeout(() => {
+        resetRound();
+      }, 900);
     } catch (err) {
       console.error("SAFE ERROR:", err);
       setGameMessage(`Safe Fehler: ${err.message}`, "error");
@@ -469,7 +512,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   (async function init() {
     try {
-      hideModeControls();
       showLogin();
       resetRound();
 
